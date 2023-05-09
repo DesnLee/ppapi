@@ -8,12 +8,18 @@ import (
 	"os/signal"
 	"time"
 
+	"ppapi.desnlee.com/internal/database"
 	"ppapi.desnlee.com/internal/router"
 )
 
 func RunServer() {
-	const port = "9999"
+	// 连接数据库
+	defer database.Close()
+	database.Connect()
+	database.CreateTables()
+
 	// 初始化服务器
+	const port = "9999"
 	srv := &http.Server{
 		Addr:    ":" + port,
 		Handler: router.New(),
