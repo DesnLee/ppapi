@@ -8,15 +8,48 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/spf13/cobra"
 	"ppapi.desnlee.com/internal/database"
 	"ppapi.desnlee.com/internal/router"
 )
 
-func RunServer() {
+func Run() {
+	rootCmd := &cobra.Command{
+		Use: "run",
+	}
+	svrCmd := &cobra.Command{
+		Use: "server",
+		Run: func(cmd *cobra.Command, args []string) {
+			// 运行服务器
+			runServer()
+		},
+	}
+	dbCmd := &cobra.Command{
+		Use: "db",
+	}
+	createCmd := &cobra.Command{
+		Use: "create",
+		Run: func(cmd *cobra.Command, args []string) {
+			database.CreateTables()
+		},
+	}
+
+	rootCmd.AddCommand(svrCmd, dbCmd)
+	dbCmd.AddCommand(createCmd)
+
 	// 连接数据库
 	defer database.Close()
 	database.Connect()
-	database.CreateTables()
+
+	// 命令行运行
+	err := rootCmd.Execute()
+	if err != nil {
+		return
+	}
+
+}
+
+func runServer() {
 
 	// 初始化服务器
 	const port = "9999"

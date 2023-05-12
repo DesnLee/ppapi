@@ -9,6 +9,6 @@ import (
 func main() {
 	defer log.Println("服务已关闭")
 
-	// 初始化服务器
-	cmd.RunServer()
+	// 启动
+	cmd.Run()
 }

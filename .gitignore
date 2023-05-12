@@ -1,3 +1,5 @@
 gin.log
 bin
 .idea
+ppapi
+.DS_Store
