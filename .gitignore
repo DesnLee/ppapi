@@ -3,3 +3,6 @@ bin
 .idea
 ppapi
 .DS_Store
+
+db/sqlcExec
+docs

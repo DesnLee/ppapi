@@ -1,6 +1,7 @@
 package database
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"log"
@@ -9,10 +10,14 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
+	"github.com/google/uuid"
+	"ppapi.desnlee.com/db/sqlcExec"
 )
 
 var (
-	DB       *sql.DB
+	DB    *sql.DB
+	DBCtx = context.Background()
+
 	host     = "localhost"
 	user     = "root"
 	password = "123456"
@@ -22,10 +27,26 @@ var (
 
 // sqlc
 func Connect() {
+	dsn := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=disable TimeZone=Asia/Shanghai", host, user, password, dbname, port)
+	db, err := sql.Open("postgres", dsn)
 
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	if err = db.Ping(); err != nil {
+		log.Fatalln(err)
+	}
+	DB = db
+	log.Println("数据库连接成功！")
 }
 
 func Close() {
+	if err := DB.Close(); err != nil {
+		log.Fatalln(err)
+	} else {
+		log.Println("数据库连接已关闭！")
+	}
 }
 
 func MigrateNew(name string) {
@@ -64,7 +85,19 @@ func MigrateDown(step int) {
 }
 
 func Crud() {
+	q := sqlcExec.New(DB)
 
+	// num := rand.Int()
+	// u, err := q.CreateUser(DBCtx, sqlcExec.CreateUserParams{Email: fmt.Sprintf("%v@qq.com", num), Phone: fmt.Sprintf("%v", num)})
+	// if err != nil {
+	// 	log.Fatalln(err)
+	// }
+	id := uuid.MustParse("042ef509-32c6-492f-93b3-faea02dac1f1")
+	newU, err := q.UpdateUser(DBCtx, sqlcExec.UpdateUserParams{ID: id, Phone: "123456789"})
+	if err != nil {
+		log.Fatalln(err)
+	}
+	fmt.Println(newU)
 }
 
 // gorm
