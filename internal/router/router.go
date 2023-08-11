@@ -8,6 +8,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"ppapi.desnlee.com/internal/controller"
 )
 
@@ -47,7 +49,11 @@ func New() *gin.Engine {
 
 	// 初始化 controllerV1 路由组
 	// initV1(r)
-	r.GET("/ping", controller.PingHandler)
+	v1 := r.Group("/api/v1")
+	v1.GET("/ping", controller.PingHandler)
+
+	// 初始化 swagger 路由组
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	log.Println("初始化路由成功！")
 	return r
