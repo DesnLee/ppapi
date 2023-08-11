@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"errors"
 	"log"
 	"net/http"
 	"os"
@@ -33,9 +34,21 @@ func Run() {
 			database.CreateTables()
 		},
 	}
+	migrateCmd := &cobra.Command{
+		Use: "migrate",
+		Run: func(cmd *cobra.Command, args []string) {
+			database.Migrate()
+		},
+	}
+	crudCmd := &cobra.Command{
+		Use: "crud",
+		Run: func(cmd *cobra.Command, args []string) {
+			database.Crud()
+		},
+	}
 
 	rootCmd.AddCommand(svrCmd, dbCmd)
-	dbCmd.AddCommand(createCmd)
+	dbCmd.AddCommand(createCmd, migrateCmd, crudCmd)
 
 	// 连接数据库
 	defer database.Close()
@@ -62,7 +75,7 @@ func runServer() {
 	go func() {
 		// 服务连接
 		log.Printf("服务器已启动于 http://localhost:%v\n", port)
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Fatalf("服务器启动失败：%s\n", err)
 		}
 	}()
