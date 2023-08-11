@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -18,6 +19,7 @@ func Run() {
 	rootCmd := &cobra.Command{
 		Use: "run",
 	}
+
 	svrCmd := &cobra.Command{
 		Use: "server",
 		Run: func(cmd *cobra.Command, args []string) {
@@ -25,19 +27,36 @@ func Run() {
 			runServer()
 		},
 	}
+
 	dbCmd := &cobra.Command{
 		Use: "db",
 	}
-	createCmd := &cobra.Command{
-		Use: "create",
+	newMigrationCmd := &cobra.Command{
+		Use: "migrate:new",
 		Run: func(cmd *cobra.Command, args []string) {
-			database.CreateTables()
+			if len(args) == 0 {
+				log.Fatalln("请输入迁移名称")
+			}
+			database.MigrateNew(args[0])
 		},
 	}
-	migrateCmd := &cobra.Command{
-		Use: "migrate",
+	migrateUpCmd := &cobra.Command{
+		Use: "migrate:up",
 		Run: func(cmd *cobra.Command, args []string) {
-			database.Migrate()
+			database.MigrateUp()
+		},
+	}
+	migrateDownCmd := &cobra.Command{
+		Use: "migrate:down",
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) == 0 {
+				log.Fatalln("请输入回退步数")
+			}
+			step, err := strconv.Atoi(args[0])
+			if err != nil {
+				log.Fatalln(err)
+			}
+			database.MigrateDown(step)
 		},
 	}
 	crudCmd := &cobra.Command{
@@ -48,7 +67,7 @@ func Run() {
 	}
 
 	rootCmd.AddCommand(svrCmd, dbCmd)
-	dbCmd.AddCommand(createCmd, migrateCmd, crudCmd)
+	dbCmd.AddCommand(newMigrationCmd, migrateUpCmd, migrateDownCmd, crudCmd)
 
 	// 连接数据库
 	defer database.Close()
