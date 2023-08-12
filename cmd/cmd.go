@@ -12,6 +12,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"ppapi.desnlee.com/internal/database"
+	"ppapi.desnlee.com/internal/email"
 	"ppapi.desnlee.com/internal/router"
 )
 
@@ -25,6 +26,16 @@ func Run() {
 		Run: func(cmd *cobra.Command, args []string) {
 			// 运行服务器
 			runServer()
+		},
+	}
+
+	emailCmd := &cobra.Command{
+		Use: "email",
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) == 0 {
+				log.Fatalln("请输入收件人邮箱列表")
+			}
+			email.Send(args)
 		},
 	}
 
@@ -66,7 +77,7 @@ func Run() {
 		},
 	}
 
-	rootCmd.AddCommand(svrCmd, dbCmd)
+	rootCmd.AddCommand(svrCmd, emailCmd, dbCmd)
 	dbCmd.AddCommand(newMigrationCmd, migrateUpCmd, migrateDownCmd, crudCmd)
 
 	// 连接数据库
