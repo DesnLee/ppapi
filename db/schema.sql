@@ -1,9 +1,9 @@
-CREATE TABLE users
+CREATE TABLE validation_codes
 (
-    id         uuid PRIMARY KEY             DEFAULT gen_random_uuid(),
-    email      VARCHAR(255) NOT NULL UNIQUE,
-    phone      VARCHAR(50)  NOT NULL UNIQUE,
-    address    VARCHAR(255),
-    created_at TIMESTAMPTZ  NOT NULL        DEFAULT now(),
-    updated_at TIMESTAMPTZ  NOT NULL        DEFAULT now()
+    id         SERIAL PRIMARY KEY,
+    code       VARCHAR(20)  NOT NULL,
+    email      VARCHAR(255) NOT NULL,
+    used_at    TIMESTAMPTZ,
+    created_at TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
