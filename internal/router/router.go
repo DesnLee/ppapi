@@ -51,6 +51,7 @@ func New() *gin.Engine {
 	// initV1(r)
 	v1 := r.Group("/api/v1")
 	v1.GET("/ping", controller.PingHandler)
+	v1.POST("/validation_code", controller.SendValidationCodeHandler)
 
 	// 初始化 swagger 路由组
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
