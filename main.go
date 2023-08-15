@@ -1,11 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
-	"github.com/spf13/viper"
 	"ppapi.desnlee.com/cmd"
+	"ppapi.desnlee.com/config"
 	"ppapi.desnlee.com/docs"
 )
 
@@ -30,19 +29,8 @@ func main() {
 	docs.SwaggerInfo.Version = "1.0"
 
 	// 读取配置文件
-	readEnv()
+	config.LoadConfig()
 
 	// 启动
 	cmd.Run()
-}
-
-// 读取配置文件
-func readEnv() {
-	viper.SetConfigName(".env")
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath(".")
-
-	if err := viper.ReadInConfig(); err != nil { // Handle errors reading the config file
-		log.Fatalln(fmt.Errorf("fatal error config file: %w", err))
-	}
 }

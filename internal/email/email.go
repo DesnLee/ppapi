@@ -45,3 +45,15 @@ func Send(to []string) {
 		log.Fatalln(err)
 	}
 }
+
+func SendValidationCode(to, code string) error {
+	initDialer()
+
+	m := gomail.NewMessage()
+	m.SetAddressHeader("From", address, username)
+	m.SetHeader("To", to)
+	m.SetHeader("Subject", "Pocket Purse 验证码")
+	m.SetBody("text/html", "您好，您正在注册或登录 Pocket Purse！<br><br> 您的验证码是: <b>"+code+"</b>，有效期为5分钟。<br><br>如果不是您的操作，请忽略此邮件。")
+
+	return d.DialAndSend(m)
+}

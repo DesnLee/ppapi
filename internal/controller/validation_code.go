@@ -2,8 +2,10 @@ package controller
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/gin-gonic/gin"
+	"ppapi.desnlee.com/internal/email"
 )
 
 type requestBody struct {
@@ -15,6 +17,7 @@ type requestBody struct {
 // @Description  发送邮件验证码
 // @Accept       json
 // @Produce      json
+// @Param        body body requestBody true "comment"
 // @Success      200
 // @Failure      400
 // @Failure      500
@@ -27,4 +30,10 @@ func SendValidationCodeHandler(c *gin.Context) {
 	}
 
 	fmt.Println(body.Email)
+
+	if err := email.SendValidationCode(body.Email, "123456"); err != nil {
+		log.Println("[SendValidationCode Failed]: ", err)
+		c.JSON(500, gin.H{"msg": "发送失败"})
+		return
+	}
 }
