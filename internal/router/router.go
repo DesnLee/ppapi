@@ -5,6 +5,8 @@ import (
 	"io"
 	"log"
 	"os"
+	"path"
+	"runtime"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -18,7 +20,9 @@ func New() *gin.Engine {
 
 	// 写入日志文件
 	// f, _ := os.Create("gin.log")
-	f, _ := os.OpenFile("gin.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	_, filename, _, _ := runtime.Caller(0)
+	root := path.Dir(path.Dir(path.Dir(filename)))
+	f, _ := os.OpenFile(root+"/gin.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	// 如果需要同时将日志写入文件和控制台，请使用以下代码。
 	gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
 
