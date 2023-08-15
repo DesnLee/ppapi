@@ -10,12 +10,12 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	"github.com/google/uuid"
 	"ppapi.desnlee.com/db/sqlcExec"
 )
 
 var (
 	DB    *sql.DB
+	Q     *sqlcExec.Queries
 	DBCtx = context.Background()
 
 	host     = "localhost"
@@ -38,6 +38,7 @@ func Connect() {
 		log.Fatalln(err)
 	}
 	DB = db
+	Q = sqlcExec.New(DB)
 	log.Println("数据库连接成功！")
 }
 
@@ -85,19 +86,19 @@ func MigrateDown(step int) {
 }
 
 func Crud() {
-	q := sqlcExec.New(DB)
+	// q := sqlcExec.New(DB)
 
 	// num := rand.Int()
 	// u, err := q.CreateUser(DBCtx, sqlcExec.CreateUserParams{Email: fmt.Sprintf("%v@qq.com", num), Phone: fmt.Sprintf("%v", num)})
 	// if err != nil {
 	// 	log.Fatalln(err)
 	// }
-	id := uuid.MustParse("042ef509-32c6-492f-93b3-faea02dac1f1")
-	newU, err := q.UpdateUser(DBCtx, sqlcExec.UpdateUserParams{ID: id, Phone: "123456789"})
-	if err != nil {
-		log.Fatalln(err)
-	}
-	fmt.Println(newU)
+	// id := uuid.MustParse("042ef509-32c6-492f-93b3-faea02dac1f1")
+	// newU, err := q.UpdateUser(DBCtx, sqlcExec.UpdateUserParams{ID: id, Phone: "123456789"})
+	// if err != nil {
+	// 	log.Fatalln(err)
+	// }
+	// fmt.Println(newU)
 }
 
 // gorm

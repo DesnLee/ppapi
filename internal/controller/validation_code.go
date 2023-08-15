@@ -1,10 +1,11 @@
 package controller
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/gin-gonic/gin"
+	"ppapi.desnlee.com/db/sqlcExec"
+	"ppapi.desnlee.com/internal/database"
 	"ppapi.desnlee.com/internal/email"
 )
 
@@ -29,9 +30,16 @@ func SendValidationCodeHandler(c *gin.Context) {
 		return
 	}
 
-	fmt.Println(body.Email)
+	row, err := database.Q.CreateValidationCode(database.DBCtx, sqlcExec.CreateValidationCodeParams{
+		Email: body.Email,
+		Code:  "123456",
+	})
+	if err != nil {
+		log.Println("[CreateValidationCode Failed]: ", err)
+		return
+	}
 
-	if err := email.SendValidationCode(body.Email, "123456"); err != nil {
+	if err := email.SendValidationCode(row.Email, row.Code); err != nil {
 		log.Println("[SendValidationCode Failed]: ", err)
 		c.JSON(500, gin.H{"msg": "发送失败"})
 		return
