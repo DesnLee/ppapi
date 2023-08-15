@@ -24,5 +24,5 @@ func TestValidationCode(t *testing.T) {
 	newCount, _ := database.Q.CountValidationCodes(database.DBCtx)
 
 	assert.Equal(t, oldCount+1, newCount)
-	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, http.StatusNoContent, w.Code)
 }
