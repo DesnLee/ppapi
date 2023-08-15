@@ -1,1 +1,1 @@
-swag init && go build -o ppapi && ./ppapi server
+sqlc generate && swag init && go build -o ppapi && ./ppapi server

@@ -41,3 +41,9 @@ go build . && ./ppapi db migrate:down 1
 # 或者
 migrate -database "postgres://root:123456@localhost:5432/pp_dev?sslmode=disable" -source "file://$(pwd)/db/migrations" down 1
 ```
+
+# 启动服务
+
+```bash
+sh ./scripts/run.sh
+```
