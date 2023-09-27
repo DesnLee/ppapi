@@ -6,3 +6,9 @@ CREATE TABLE validation_codes (
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+COMMENT ON COLUMN validation_codes.code IS 'email validation code';
+COMMENT ON COLUMN validation_codes.email IS 'email address';
+COMMENT ON COLUMN validation_codes.used_at IS 'when the code was used';
+COMMENT ON COLUMN validation_codes.created_at IS 'when the code was created';
+COMMENT ON COLUMN validation_codes.updated_at IS 'when the code was last updated';
