@@ -1,11 +1,13 @@
 package controller_test
 
 import (
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
 
+	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"ppapi.desnlee.com/config"
@@ -27,7 +29,11 @@ func TestValidationCode(t *testing.T) {
 
 	oldCount, _ := database.Q.CountValidationCodes(database.DBCtx)
 
-	req, _ := http.NewRequest("POST", "/api/v1/validation_code", strings.NewReader(`{"email":"test@qq.com"}`))
+	body := gin.H{
+		"email": "test@qq.com",
+	}
+	bodyStr, _ := json.Marshal(body)
+	req, _ := http.NewRequest("POST", "/api/v1/validation_code", strings.NewReader(string(bodyStr)))
 	req.Header.Set("Content-Type", "application/json")
 	r.ServeHTTP(w, req)
 
