@@ -15,3 +15,9 @@ WHERE email = $1
   AND used_at IS NULL
 ORDER BY created_at DESC
 LIMIT 1;
+
+-- name: UseValidationCode :one
+UPDATE validation_codes
+SET used_at = NOW()
+WHERE id = $1
+RETURNING *;

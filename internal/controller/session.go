@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"database/sql"
 	"log"
 	"net/http"
 
@@ -35,14 +36,8 @@ func CreateSessionHandler(c *gin.Context) {
 		return
 	}
 
-	_, err := database.Q.CheckValidationCode(database.DBCtx, sqlcExec.CheckValidationCodeParams{
-		Email: body.Email,
-		Code:  body.Code,
-	})
-
-	if err != nil {
-		log.Println("[CheckValidationCode Failed]: ", err)
-		c.JSON(http.StatusUnauthorized, gin.H{"msg": "无效的邮箱或验证码"})
+	// 使用数据库事务校验并使用验证码
+	if err := checkAndUseValidationCode(c, body.Email, body.Code); err != nil {
 		return
 	}
 
@@ -52,4 +47,46 @@ func CreateSessionHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, responseBody)
+}
+
+// checkAndUseValidationCode 校验并使用验证码
+func checkAndUseValidationCode(c *gin.Context, email, code string) error {
+	tx, err := database.DB.Begin()
+	if err != nil {
+		log.Println("[Create Database Transaction Failed]: ", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"msg": "服务器错误"})
+		return err
+	}
+	defer func(tx *sql.Tx) {
+		err := tx.Rollback()
+		if err != nil {
+			log.Println("[Rollback Transaction Failed]: ", err)
+		}
+	}(tx)
+
+	qtx := database.Q.WithTx(tx)
+	r, err := qtx.CheckValidationCode(database.DBCtx, sqlcExec.CheckValidationCodeParams{
+		Email: email,
+		Code:  code,
+	})
+
+	if err != nil {
+		log.Println("[CheckValidationCode Failed]: ", err)
+		c.JSON(http.StatusUnauthorized, gin.H{"msg": "无效的邮箱或验证码"})
+		return err
+	}
+
+	// 使用验证码
+	if _, err = qtx.UseValidationCode(database.DBCtx, r.ID); err != nil {
+		log.Println("[UseValidationCode Failed]: ", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"msg": "服务器错误"})
+		return err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
