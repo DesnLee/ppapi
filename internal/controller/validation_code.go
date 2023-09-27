@@ -11,7 +11,7 @@ import (
 	"ppapi.desnlee.com/pkg"
 )
 
-type requestBody struct {
+type getValidationCodeRequestBody struct {
 	Email string `json:"email" binding:"required"`
 }
 
@@ -20,13 +20,14 @@ type requestBody struct {
 // @Description  发送邮件验证码
 // @Accept       json
 // @Produce      json
-// @Param        body body requestBody true "comment"
+// @Param        body body getValidationCodeRequestBody true "comment"
 // @Success      204
 // @Failure      400
 // @Failure      500
 // @Router       /validation_code [post]
 func SendValidationCodeHandler(c *gin.Context) {
-	body := requestBody{}
+	body := getValidationCodeRequestBody{}
+
 	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"msg": "参数错误"})
 		return
