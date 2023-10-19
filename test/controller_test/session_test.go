@@ -2,7 +2,6 @@ package controller_test
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -13,6 +12,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"ppapi.desnlee.com/db/sqlcExec"
 	"ppapi.desnlee.com/internal/database"
+	"ppapi.desnlee.com/internal/jwt_helper"
 	"ppapi.desnlee.com/internal/router"
 	"ppapi.desnlee.com/pkg"
 )
@@ -54,7 +54,16 @@ func TestSession(t *testing.T) {
 		t.Error("Unmarshal Response Body Error: ", err)
 	}
 
-	fmt.Println("JWT: ", schema.JWT)
+	u, err := database.Q.FindUserByEmail(database.DBCtx, email)
+	if err != nil {
+		t.Error("Find User By Email Error: ", err)
+	}
 
+	uid, err := jwt_helper.GetJWTUserID(schema.JWT)
+	if err != nil {
+		t.Error("Get JWT User ID Error: ", err)
+	}
+
+	assert.Equal(t, u.ID, uid)
 	assert.Equal(t, http.StatusOK, w.Code)
 }

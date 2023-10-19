@@ -2,6 +2,7 @@ package controller
 
 import (
 	"database/sql"
+	"errors"
 	"log"
 	"net/http"
 
@@ -42,7 +43,12 @@ func CreateSessionHandler(c *gin.Context) {
 		return
 	}
 
-	jwt, err := jwt_helper.GenerateJWT(1)
+	u, err := findOrCreateUser(c, body.Email)
+	if err != nil {
+		return
+	}
+
+	jwt, err := jwt_helper.GenerateJWT(u.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"msg": "服务器错误"})
 		return
@@ -64,10 +70,7 @@ func checkAndUseValidationCode(c *gin.Context, email, code string) error {
 		return err
 	}
 	defer func(tx *sql.Tx) {
-		err := tx.Rollback()
-		if err != nil {
-			log.Println("[Rollback Transaction Failed]: ", err)
-		}
+		_ = tx.Rollback()
 	}(tx)
 
 	qtx := database.Q.WithTx(tx)
@@ -95,4 +98,45 @@ func checkAndUseValidationCode(c *gin.Context, email, code string) error {
 	}
 
 	return nil
+}
+
+// findOrCreateUser 查找或创建用户
+func findOrCreateUser(c *gin.Context, email string) (sqlcExec.User, error) {
+	u := sqlcExec.User{}
+	tx, err := database.DB.Begin()
+	if err != nil {
+		log.Println("[Create Database Transaction Failed]: ", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"msg": "服务器错误"})
+		return u, err
+	}
+	defer func(tx *sql.Tx) {
+		_ = tx.Rollback()
+	}(tx)
+
+	qtx := database.Q.WithTx(tx)
+	u, err = qtx.FindUserByEmail(database.DBCtx, email)
+
+	if err != nil {
+		// 如果是无记录
+		if errors.Is(err, sql.ErrNoRows) {
+			// 创建用户
+			u, err = qtx.CreateUser(database.DBCtx, email)
+			if err != nil {
+				log.Println("[Create user Failed]: ", err)
+				c.JSON(http.StatusInternalServerError, gin.H{"msg": "服务错误，请稍后再试"})
+				return u, err
+			}
+		} else {
+			log.Println("[Find user by email Failed]: ", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "服务错误，请稍后再试"})
+			return u, err
+		}
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return u, err
+	}
+
+	return u, nil
 }
