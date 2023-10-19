@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"ppapi.desnlee.com/db/sqlcExec"
 	"ppapi.desnlee.com/internal/database"
+	"ppapi.desnlee.com/internal/jwt_helper"
 )
 
 type loginRequestBody struct {
@@ -41,7 +42,12 @@ func CreateSessionHandler(c *gin.Context) {
 		return
 	}
 
-	jwt := "JWT"
+	jwt, err := jwt_helper.GenerateJWT(1)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"msg": "服务器错误"})
+		return
+	}
+
 	responseBody := loginResponseBody{
 		JWT: jwt,
 	}

@@ -2,6 +2,7 @@ package controller_test
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -52,6 +53,8 @@ func TestSession(t *testing.T) {
 	if err = json.Unmarshal(w.Body.Bytes(), &schema); err != nil {
 		t.Error("Unmarshal Response Body Error: ", err)
 	}
+
+	fmt.Println("JWT: ", schema.JWT)
 
 	assert.Equal(t, http.StatusOK, w.Code)
 }
