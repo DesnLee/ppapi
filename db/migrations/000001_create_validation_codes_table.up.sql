@@ -1,10 +1,11 @@
-CREATE TABLE validation_codes (
-    id SERIAL PRIMARY KEY,
-    code VARCHAR(20) NOT NULL,
-    email VARCHAR(255) NOT NULL,
-    used_at TIMESTAMPTZ,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE validation_codes
+(
+    id         SERIAL PRIMARY KEY,
+    code       VARCHAR(20)  NOT NULL,
+    email      VARCHAR(255) NOT NULL,
+    used_at    TIMESTAMPTZ,
+    created_at TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 COMMENT ON COLUMN validation_codes.code IS 'email validation code';
