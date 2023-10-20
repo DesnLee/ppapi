@@ -11,6 +11,7 @@ import (
 
 func TestPing(t *testing.T) {
 	r := gin.Default()
+	gin.SetMode(gin.ReleaseMode)
 	r.GET("/ping", PingHandler)
 
 	w := httptest.NewRecorder()

@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 	"os/signal"
 	"strconv"
 	"time"
@@ -36,6 +37,37 @@ func Run() {
 				log.Fatalln("请输入收件人邮箱列表")
 			}
 			email.Send(args)
+		},
+	}
+
+	coverCmd := &cobra.Command{
+		Use: "cover",
+		Run: func(cmd *cobra.Command, args []string) {
+			if err := exec.Command("MailHog").Start(); err != nil {
+				log.Fatalln("MailHog 启动失败：", err)
+			}
+			if err := exec.Command("go", "test", "-coverprofile=coverage.out", "./...").Run(); err != nil {
+				log.Fatalln("测试失败：", err)
+			}
+			if err := exec.Command("go", "tool", "cover", "-html=coverage.out", "-o", "coverage.html").Run(); err != nil {
+				log.Fatalln("生成 html 失败：", err)
+			}
+
+			var port string
+			if len(args) == 0 {
+				port = "8888"
+			} else {
+				port = args[0]
+			}
+
+			defer func() {
+				os.Remove("coverage.out")
+				os.Remove("coverage.html")
+			}()
+			log.Printf("查看覆盖率报告 http://localhost:%v/coverage.html", port)
+			if err := http.ListenAndServe(":"+port, http.FileServer(http.Dir("."))); err != nil {
+				log.Fatalln("服务器启动失败：", err)
+			}
 		},
 	}
 
@@ -77,7 +109,7 @@ func Run() {
 		},
 	}
 
-	rootCmd.AddCommand(svrCmd, emailCmd, dbCmd)
+	rootCmd.AddCommand(svrCmd, emailCmd, coverCmd, dbCmd)
 	dbCmd.AddCommand(newMigrationCmd, migrateUpCmd, migrateDownCmd, crudCmd)
 
 	// 连接数据库
@@ -89,11 +121,9 @@ func Run() {
 	if err != nil {
 		return
 	}
-
 }
 
 func runServer() {
-
 	// 初始化服务器
 	const port = "9999"
 	srv := &http.Server{
