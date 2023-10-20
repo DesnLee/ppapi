@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"ppapi.desnlee.com/internal/controller/controller_helper"
 	"ppapi.desnlee.com/internal/jwt_helper"
+	"ppapi.desnlee.com/internal/model"
 )
 
 type SessionController struct{}
@@ -16,23 +17,22 @@ func (ctl *SessionController) Register(g *gin.RouterGroup) {
 }
 
 // Create godoc
-// @Summary      用户登录
-// @Description  用户登录并获取 token
-// @Accept       json
-// @Produce      json
-// @Param        body body loginRequestBody true "comment"
-// @Success      200 {object} loginResponseBody
-// @Failure      400
-// @Failure      401
-// @Router       /session [post]
+//
+//	@Summary		用户登录
+//	@Description	用户登录并获取 token
+//	@Accept			json
+//	@Produce		json
+//	@Param			body	body		model.SessionRequestBody						true	"传入邮箱和验证码"
+//	@Success		200		{object}	model.DataResponse[model.SessionResponseBody]	"成功获取到 jwt"
+//	@Failure		400		{object}	model.MsgResponse								"参数错误"
+//	@Failure		401		{object}	model.MsgResponse								"验证码错误"
+//	@Failure		500		{object}	model.MsgResponse								"服务器错误"
+//	@Router			/session [post]
 func (ctl *SessionController) Create(c *gin.Context) {
-	body := struct {
-		Email string `json:"email" binding:"required"`
-		Code  string `json:"code" binding:"required"`
-	}{}
+	body := model.SessionRequestBody{}
 
 	if err := c.ShouldBindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"msg": "参数错误"})
+		c.JSON(http.StatusBadRequest, model.MsgResponse{Msg: "参数错误"})
 		return
 	}
 
@@ -48,17 +48,15 @@ func (ctl *SessionController) Create(c *gin.Context) {
 
 	jwt, err := jwt_helper.GenerateJWT(u.ID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"msg": "服务器错误"})
+		c.JSON(http.StatusInternalServerError, model.MsgResponse{Msg: "参数错误"})
 		return
 	}
 
-	responseBody := struct {
-		JWT string `json:"jwt"`
-	}{
-		JWT: jwt,
-	}
-
-	c.JSON(http.StatusOK, responseBody)
+	c.JSON(http.StatusOK, model.DataResponse[model.SessionResponseBody]{
+		Data: model.SessionResponseBody{
+			JWT: jwt,
+		},
+	})
 }
 
 func (ctl *SessionController) Read(c *gin.Context) {

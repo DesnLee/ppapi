@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"ppapi.desnlee.com/db/sqlcExec"
 	"ppapi.desnlee.com/internal/database"
+	"ppapi.desnlee.com/internal/model"
 )
 
 // CheckAndUseValidationCode 校验并使用验证码
@@ -16,7 +17,7 @@ func CheckAndUseValidationCode(c *gin.Context, email, code string) error {
 	tx, err := database.DB.Begin()
 	if err != nil {
 		log.Println("[Create Database Transaction Failed]: ", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"msg": "服务器错误"})
+		c.JSON(http.StatusInternalServerError, model.MsgResponse{Msg: "服务器错误"})
 		return err
 	}
 	defer func(tx *sql.Tx) {
@@ -31,14 +32,14 @@ func CheckAndUseValidationCode(c *gin.Context, email, code string) error {
 
 	if err != nil {
 		log.Println("[CheckValidationCode Failed]: ", err)
-		c.JSON(http.StatusUnauthorized, gin.H{"msg": "无效的邮箱或验证码"})
+		c.JSON(http.StatusUnauthorized, model.MsgResponse{Msg: "无效的邮箱或验证码"})
 		return err
 	}
 
 	// 使用验证码
 	if _, err = qtx.UseValidationCode(database.DBCtx, r.ID); err != nil {
 		log.Println("[UseValidationCode Failed]: ", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"msg": "服务器错误"})
+		c.JSON(http.StatusInternalServerError, model.MsgResponse{Msg: "服务器错误"})
 		return err
 	}
 
@@ -56,7 +57,7 @@ func FindOrCreateUserByEmail(c *gin.Context, email string) (sqlcExec.User, error
 	tx, err := database.DB.Begin()
 	if err != nil {
 		log.Println("[Create Database Transaction Failed]: ", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"msg": "服务器错误"})
+		c.JSON(http.StatusInternalServerError, model.MsgResponse{Msg: "服务器错误"})
 		return u, err
 	}
 	defer func(tx *sql.Tx) {
@@ -73,12 +74,12 @@ func FindOrCreateUserByEmail(c *gin.Context, email string) (sqlcExec.User, error
 			u, err = qtx.CreateUser(database.DBCtx, email)
 			if err != nil {
 				log.Println("[Create user Failed]: ", err)
-				c.JSON(http.StatusInternalServerError, gin.H{"msg": "服务错误，请稍后再试"})
+				c.JSON(http.StatusInternalServerError, model.MsgResponse{Msg: "服务器错误"})
 				return u, err
 			}
 		} else {
 			log.Println("[Find user by email Failed]: ", err)
-			c.JSON(http.StatusInternalServerError, gin.H{"msg": "服务错误，请稍后再试"})
+			c.JSON(http.StatusInternalServerError, model.MsgResponse{Msg: "服务器错误"})
 			return u, err
 		}
 	}

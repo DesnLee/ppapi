@@ -8,6 +8,7 @@ import (
 	"ppapi.desnlee.com/db/sqlcExec"
 	"ppapi.desnlee.com/internal/database"
 	"ppapi.desnlee.com/internal/email"
+	"ppapi.desnlee.com/internal/model"
 	"ppapi.desnlee.com/pkg"
 )
 
@@ -19,29 +20,28 @@ func (ctl *ValidationCodeController) Register(g *gin.RouterGroup) {
 }
 
 // Create godoc
-// @Summary      邮件验证码
-// @Description  发送邮件验证码
-// @Accept       json
-// @Produce      json
-// @Param        body body getValidationCodeRequestBody true "comment"
-// @Success      204
-// @Failure      400
-// @Failure      500
-// @Router       /validation_code [post]
+//
+//	@Summary		邮件验证码
+//	@Description	发送邮件验证码
+//	@Accept			json
+//	@Produce		json
+//	@Param			body	body	model.ValidationCodeRequestBody	true	"传入接收验证码的邮箱，未注册将会自动注册"
+//	@Success		204
+//	@Failure		400	{object}	model.MsgResponse	"参数错误"
+//	@Failure		500	{object}	model.MsgResponse	"服务器错误"
+//	@Router			/validation_code [post]
 func (ctl *ValidationCodeController) Create(c *gin.Context) {
-	body := struct {
-		Email string `json:"email" binding:"required"`
-	}{}
+	body := model.ValidationCodeRequestBody{}
 
 	if err := c.ShouldBindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"msg": "参数错误"})
+		c.JSON(http.StatusBadRequest, model.MsgResponse{Msg: "参数错误"})
 		return
 	}
 
 	code, err := pkg.GenerateRandomCode(6)
 	if err != nil {
 		log.Println("[RandCode Failed]: ", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"msg": "发送失败"})
+		c.JSON(http.StatusInternalServerError, model.MsgResponse{Msg: "发送失败"})
 		return
 	}
 
@@ -51,14 +51,14 @@ func (ctl *ValidationCodeController) Create(c *gin.Context) {
 	})
 	if err != nil {
 		log.Println("[CreateValidationCode Failed]: ", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"msg": "发送失败"})
+		c.JSON(http.StatusInternalServerError, model.MsgResponse{Msg: "发送失败"})
 		return
 	}
 
 	err = email.SendValidationCode(row.Email, row.Code)
 	if err != nil {
 		log.Println("[SendValidationCode Failed]: ", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"msg": "发送失败"})
+		c.JSON(http.StatusInternalServerError, model.MsgResponse{Msg: "发送失败"})
 		return
 	} else {
 		c.Status(http.StatusNoContent)

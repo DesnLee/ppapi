@@ -9,20 +9,20 @@ import (
 	"ppapi.desnlee.com/internal/database"
 )
 
-// @title           Pocket Purse API Docs
-// @description     Pocket Purse API Docs with Swagger
+//	@title			Pocket Purse API Docs
+//	@description	Pocket Purse API Docs with Swagger
 
-// @contact.name   DesnLee
-// @contact.url    https://desnlee.com
-// @contact.email  jiakun.ui@gmail.com
+//	@contact.name	DesnLee
+//	@contact.url	https://desnlee.com
+//	@contact.email	jiakun.ui@gmail.com
 
-// @host      localhost:9999
-// @BasePath  /api/v1
+//	@host		localhost:9999
+//	@BasePath	/api/v1
 
-// @securityDefinitions.basic  Bearer
+//	@securityDefinitions.basic	Bearer
 
-// @externalDocs.description  OpenAPI
-// @externalDocs.url          https://swagger.io/resources/open-api/
+// @externalDocs.description	OpenAPI
+// @externalDocs.url			https://swagger.io/resources/open-api/
 func main() {
 	defer log.Println("服务已关闭")
 	defer database.Close()
