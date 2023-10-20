@@ -8,3 +8,5 @@ db/sqlcExec
 docs
 .env.yaml
 .env.json
+
+coverage.*

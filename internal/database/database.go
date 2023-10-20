@@ -10,6 +10,7 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
+	"github.com/spf13/viper"
 	"ppapi.desnlee.com/db/sqlcExec"
 )
 
@@ -17,18 +18,16 @@ var (
 	DB    *sql.DB
 	Q     *sqlcExec.Queries
 	DBCtx = context.Background()
-
-	host     = "localhost"
-	user     = "root"
-	password = "123456"
-	dbname   = "pp_dev"
-	port     = "5432"
 )
+
+func generateDSN() string {
+	str := fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=disable", viper.GetString("DATABASE.USER"), viper.GetString("DATABASE.PASSWORD"), viper.GetString("DATABASE.HOST"), viper.GetString("DATABASE.PORT"), viper.GetString("DATABASE.DB_NAME"))
+	return str
+}
 
 // sqlc
 func Connect() {
-	dsn := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=disable TimeZone=Asia/Shanghai", host, user, password, dbname, port)
-	db, err := sql.Open("postgres", dsn)
+	db, err := sql.Open("postgres", generateDSN())
 
 	if err != nil {
 		log.Fatalln(err)
@@ -59,8 +58,7 @@ func MigrateNew(name string) {
 
 func MigrateUp() {
 	sourceUrl := fmt.Sprintf("file://db/migrations")
-	dbUrl := fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=disable", user, password, host, port, dbname)
-	m, err := migrate.New(sourceUrl, dbUrl)
+	m, err := migrate.New(sourceUrl, generateDSN())
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -73,8 +71,7 @@ func MigrateUp() {
 
 func MigrateDown(step int) {
 	sourceUrl := fmt.Sprintf("file://db/migrations")
-	dbUrl := fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=disable", user, password, host, port, dbname)
-	m, err := migrate.New(sourceUrl, dbUrl)
+	m, err := migrate.New(sourceUrl, generateDSN())
 	if err != nil {
 		log.Fatalln(err)
 	}

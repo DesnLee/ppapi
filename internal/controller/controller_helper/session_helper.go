@@ -1,4 +1,4 @@
-package controller
+package controller_helper
 
 import (
 	"database/sql"
@@ -9,60 +9,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"ppapi.desnlee.com/db/sqlcExec"
 	"ppapi.desnlee.com/internal/database"
-	"ppapi.desnlee.com/internal/jwt_helper"
 )
 
-type loginRequestBody struct {
-	Email string `json:"email" binding:"required"`
-	Code  string `json:"code" binding:"required"`
-}
-type loginResponseBody struct {
-	JWT string `json:"jwt"`
-}
-
-// CreateSessionHandler godoc
-// @Summary      用户登录
-// @Description  用户登录并获取 token
-// @Accept       json
-// @Produce      json
-// @Param        body body loginRequestBody true "comment"
-// @Success      200 {object} loginResponseBody
-// @Failure      400
-// @Failure      401
-// @Router       /session [post]
-func CreateSessionHandler(c *gin.Context) {
-	body := loginRequestBody{}
-
-	if err := c.ShouldBindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"msg": "参数错误"})
-		return
-	}
-
-	// 使用数据库事务校验并使用验证码
-	if err := checkAndUseValidationCode(c, body.Email, body.Code); err != nil {
-		return
-	}
-
-	u, err := findOrCreateUser(c, body.Email)
-	if err != nil {
-		return
-	}
-
-	jwt, err := jwt_helper.GenerateJWT(u.ID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"msg": "服务器错误"})
-		return
-	}
-
-	responseBody := loginResponseBody{
-		JWT: jwt,
-	}
-
-	c.JSON(http.StatusOK, responseBody)
-}
-
-// checkAndUseValidationCode 校验并使用验证码
-func checkAndUseValidationCode(c *gin.Context, email, code string) error {
+// CheckAndUseValidationCode 校验并使用验证码
+func CheckAndUseValidationCode(c *gin.Context, email, code string) error {
 	tx, err := database.DB.Begin()
 	if err != nil {
 		log.Println("[Create Database Transaction Failed]: ", err)
@@ -100,8 +50,8 @@ func checkAndUseValidationCode(c *gin.Context, email, code string) error {
 	return nil
 }
 
-// findOrCreateUser 查找或创建用户
-func findOrCreateUser(c *gin.Context, email string) (sqlcExec.User, error) {
+// FindOrCreateUserByEmail 查找或创建用户
+func FindOrCreateUserByEmail(c *gin.Context, email string) (sqlcExec.User, error) {
 	u := sqlcExec.User{}
 	tx, err := database.DB.Begin()
 	if err != nil {

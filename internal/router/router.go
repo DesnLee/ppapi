@@ -15,9 +15,12 @@ import (
 	"ppapi.desnlee.com/internal/controller"
 )
 
-func New() *gin.Engine {
-	log.Println("开始初始化路由")
+var controllers = []controller.Controller{
+	&controller.SessionController{},
+	&controller.ValidationCodeController{},
+}
 
+func New() *gin.Engine {
 	// 写入日志文件
 	// f, _ := os.Create("gin.log")
 	_, filename, _, _ := runtime.Caller(0)
@@ -51,12 +54,14 @@ func New() *gin.Engine {
 	// 静态文件服务
 	// r.Static("/static", "./static")
 
-	// 初始化 controllerV1 路由组
-	// initV1(r)
-	v1 := r.Group("/api/v1")
-	v1.GET("/ping", controller.PingHandler)
-	v1.POST("/validation_code", controller.SendValidationCodeHandler)
-	v1.POST("/session", controller.CreateSessionHandler)
+	log.Println("开始初始化路由")
+
+	r.GET("/ping", controller.PingHandler)
+
+	api := r.Group("/api")
+	for _, c := range controllers {
+		c.Register(api)
+	}
 
 	// 初始化 swagger 路由组
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

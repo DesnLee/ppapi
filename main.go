@@ -4,8 +4,9 @@ import (
 	"log"
 
 	"ppapi.desnlee.com/cmd"
-	"ppapi.desnlee.com/config"
+	_ "ppapi.desnlee.com/config"
 	"ppapi.desnlee.com/docs"
+	"ppapi.desnlee.com/internal/database"
 )
 
 // @title           Pocket Purse API Docs
@@ -22,14 +23,14 @@ import (
 
 // @externalDocs.description  OpenAPI
 // @externalDocs.url          https://swagger.io/resources/open-api/
-
 func main() {
 	defer log.Println("服务已关闭")
+	defer database.Close()
 
 	docs.SwaggerInfo.Version = "1.0"
 
 	// 读取配置文件
-	config.LoadConfig()
+	// config.LoadConfig()
 
 	// 启动
 	cmd.Run()

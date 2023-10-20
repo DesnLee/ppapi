@@ -11,11 +11,14 @@ import (
 	"ppapi.desnlee.com/pkg"
 )
 
-type getValidationCodeRequestBody struct {
-	Email string `json:"email" binding:"required"`
+type ValidationCodeController struct{}
+
+func (ctl *ValidationCodeController) Register(g *gin.RouterGroup) {
+	v1 := g.Group("/v1")
+	v1.POST("/validation_code", ctl.Create)
 }
 
-// SendValidationCodeHandler godoc
+// Create godoc
 // @Summary      邮件验证码
 // @Description  发送邮件验证码
 // @Accept       json
@@ -25,8 +28,10 @@ type getValidationCodeRequestBody struct {
 // @Failure      400
 // @Failure      500
 // @Router       /validation_code [post]
-func SendValidationCodeHandler(c *gin.Context) {
-	body := getValidationCodeRequestBody{}
+func (ctl *ValidationCodeController) Create(c *gin.Context) {
+	body := struct {
+		Email string `json:"email" binding:"required"`
+	}{}
 
 	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"msg": "参数错误"})
@@ -58,4 +63,24 @@ func SendValidationCodeHandler(c *gin.Context) {
 	} else {
 		c.Status(http.StatusNoContent)
 	}
+}
+
+func (ctl *ValidationCodeController) Read(c *gin.Context) {
+	// TODO implement me
+	panic("implement me")
+}
+
+func (ctl *ValidationCodeController) ReadMulti(c *gin.Context) {
+	// TODO implement me
+	panic("implement me")
+}
+
+func (ctl *ValidationCodeController) Update(c *gin.Context) {
+	// TODO implement me
+	panic("implement me")
+}
+
+func (ctl *ValidationCodeController) Destroy(c *gin.Context) {
+	// TODO implement me
+	panic("implement me")
 }

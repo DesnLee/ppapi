@@ -1,4 +1,4 @@
-package controller_test
+package controller
 
 import (
 	"encoding/json"
@@ -10,21 +10,16 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
-	"ppapi.desnlee.com/config"
 	"ppapi.desnlee.com/internal/database"
-	"ppapi.desnlee.com/internal/router"
+	"ppapi.desnlee.com/pkg"
 )
 
-func init() {
-	database.Connect()
-
-	config.LoadConfig()
+func TestValidationCode(t *testing.T) {
+	r := pkg.SetupTest()
 	viper.Set("EMAIL.SMTP.HOST", "localhost")
 	viper.Set("EMAIL.SMTP.PORT", "1025")
-}
+	(&ValidationCodeController{}).Register(r.Group("/api"))
 
-func TestValidationCode(t *testing.T) {
-	r := router.New()
 	w := httptest.NewRecorder()
 
 	oldCount, _ := database.Q.CountValidationCodes(database.DBCtx)

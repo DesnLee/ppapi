@@ -1,4 +1,4 @@
-package controller_test
+package controller
 
 import (
 	"encoding/json"
@@ -13,12 +13,13 @@ import (
 	"ppapi.desnlee.com/db/sqlcExec"
 	"ppapi.desnlee.com/internal/database"
 	"ppapi.desnlee.com/internal/jwt_helper"
-	"ppapi.desnlee.com/internal/router"
 	"ppapi.desnlee.com/pkg"
 )
 
 func TestSession(t *testing.T) {
-	r := router.New()
+	r := pkg.SetupTest()
+	(&SessionController{}).Register(r.Group("/api"))
+
 	w := httptest.NewRecorder()
 
 	email := "test@qq.com"

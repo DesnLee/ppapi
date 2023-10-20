@@ -9,6 +9,10 @@ import (
 	"github.com/spf13/viper"
 )
 
+func init() {
+	LoadConfig()
+}
+
 func LoadConfig() {
 	_, filename, _, _ := runtime.Caller(0)
 	root := path.Dir(path.Dir(filename))
