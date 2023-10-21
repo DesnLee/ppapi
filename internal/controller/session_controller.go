@@ -28,7 +28,7 @@ func (ctl *SessionController) Register(g *gin.RouterGroup) {
 //	@Failure		400		{object}	model.MsgResponse			"参数错误"
 //	@Failure		401		{object}	model.MsgResponse			"验证码错误"
 //	@Failure		500		{object}	model.MsgResponse			"服务器错误"
-//	@Router			/session [post]
+//	@Router			/v1/session [post]
 func (ctl *SessionController) Create(c *gin.Context) {
 	body := model.SessionRequestBody{}
 

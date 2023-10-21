@@ -17,7 +17,7 @@ import (
 //	@contact.email	jiakun.ui@gmail.com
 
 //	@host		localhost:9999
-//	@BasePath	/api/v1
+//	@BasePath	/api
 
 // @externalDocs.description	OpenAPI
 // @externalDocs.url			https://swagger.io/resources/open-api/

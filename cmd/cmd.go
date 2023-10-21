@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
+	"ppapi.desnlee.com/docs"
 	"ppapi.desnlee.com/internal/database"
 	"ppapi.desnlee.com/internal/email"
 	"ppapi.desnlee.com/internal/router"
@@ -26,7 +27,11 @@ func Run() {
 		Use: "server",
 		Run: func(cmd *cobra.Command, args []string) {
 			// 运行服务器
-			runServer()
+			port := "9999"
+			if len(args) != 0 {
+				port = args[0]
+			}
+			runServer(port)
 		},
 	}
 
@@ -123,9 +128,10 @@ func Run() {
 	}
 }
 
-func runServer() {
+func runServer(port string) {
 	// 初始化服务器
-	const port = "9999"
+	docs.SwaggerInfo.Host = "localhost:" + port
+
 	srv := &http.Server{
 		Addr:    ":" + port,
 		Handler: router.New(),
