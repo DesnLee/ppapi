@@ -18,7 +18,7 @@ import (
 var controllers = []controller.Controller{
 	&controller.SessionController{},
 	&controller.ValidationCodeController{},
-	&controller.Me{},
+	&controller.MeController{},
 }
 
 func New() *gin.Engine {

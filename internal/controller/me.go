@@ -12,14 +12,14 @@ import (
 	"ppapi.desnlee.com/internal/model"
 )
 
-type Me struct{}
+type MeController struct{}
 
-func (ctl *Me) Register(g *gin.RouterGroup) {
+func (ctl *MeController) Register(g *gin.RouterGroup) {
 	v1 := g.Group("/v1")
 	v1.GET("/me", ctl.Read)
 }
 
-func (ctl *Me) Create(c *gin.Context) {
+func (ctl *MeController) Create(c *gin.Context) {
 	// TODO implement me
 	panic("implement me")
 }
@@ -89,17 +89,17 @@ func (ctl *MeController) Read(c *gin.Context) {
 	})
 }
 
-func (ctl *Me) ReadMulti(c *gin.Context) {
+func (ctl *MeController) ReadMulti(c *gin.Context) {
 	// TODO implement me
 	panic("implement me")
 }
 
-func (ctl *Me) Update(c *gin.Context) {
+func (ctl *MeController) Update(c *gin.Context) {
 	// TODO implement me
 	panic("implement me")
 }
 
-func (ctl *Me) Destroy(c *gin.Context) {
+func (ctl *MeController) Destroy(c *gin.Context) {
 	// TODO implement me
 	panic("implement me")
 }
