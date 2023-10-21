@@ -34,11 +34,11 @@ func GenerateJWT(id uuid.UUID) (string, error) {
 	return tk, nil
 }
 
-func GetJWTUserID(tk string) (uuid.UUID, error) {
+func ParseJWT(tk string) (*JWTClaims, error) {
 	tokenString, err := decryptJWT(tk)
 	if err != nil {
 		log.Fatalln("ERR: [Decrypt JWT Failed]: ", err)
-		return uuid.Nil, err
+		return &JWTClaims{}, err
 	}
 
 	token, err := jwt.ParseWithClaims(tokenString, &JWTClaims{}, func(token *jwt.Token) (interface{}, error) {
@@ -46,9 +46,9 @@ func GetJWTUserID(tk string) (uuid.UUID, error) {
 	})
 
 	if claims, ok := token.Claims.(*JWTClaims); ok && token.Valid {
-		return claims.UserID, nil
+		return claims, nil
 	} else {
 		log.Println("ERR: [Parse JWT Failed]: ", err)
-		return uuid.Nil, err
+		return &JWTClaims{}, err
 	}
 }

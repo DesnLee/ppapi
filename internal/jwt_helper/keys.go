@@ -14,37 +14,49 @@ import (
 	"github.com/spf13/viper"
 )
 
-// getHMACSecret 获取/生成 JWT 的密钥
-func getHMACSecret() ([]byte, error) {
+// getFilePath 获取密钥文件路径
+func getFilePath() string {
 	keyPath := viper.GetString("JWT.SECRET_KEY_PATH")
 	if keyPath == "" {
 		keyPath = "./"
 	}
+	return path.Join(keyPath, SECRET_KEY_FILE_NAME)
+}
 
-	// 读取文件
-	filePath := path.Join(keyPath, SECRET_KEY_FILE_NAME)
-	keyByte, err := os.ReadFile(filePath)
+// generateHMACSecret 生成 HMAC 密钥
+func generateHMACSecret() ([]byte, error) {
+	filePath := getFilePath()
+
+	key := make([]byte, 32)
+	_, err := rand.Read(key)
 	if err != nil {
-		if errors.Is(err, os.ErrNotExist) {
-			key := make([]byte, 32)
-			_, err := rand.Read(key)
-			if err != nil {
-				log.Fatalln("ERR: [Generate JWT Secret Key Failed]: ", err)
-				return nil, err
-			}
-			err = os.WriteFile(filePath, key, 0644)
-			if err != nil {
-				log.Fatalln("ERR: [Write JWT Secret Key File Failed]: ", err)
-				return nil, err
-			}
-			return getHMACSecret()
-		} else {
-			log.Fatalln("ERR: [Read JWT Secret Key File Failed]: ", err)
-			return nil, err
-		}
+		log.Fatalln("ERR: [Generate JWT Secret Key Failed]: ", err)
+		return nil, err
+	}
+	err = os.WriteFile(filePath, key, 0644)
+	if err != nil {
+		log.Fatalln("ERR: [Write JWT Secret Key File Failed]: ", err)
+		return nil, err
 	}
 
-	return keyByte, nil
+	return key, nil
+}
+
+// getHMACSecret 获取/生成 JWT 的密钥
+func getHMACSecret() ([]byte, error) {
+	filePath := getFilePath()
+	keyByte, err := os.ReadFile(filePath)
+
+	if err == nil {
+		return keyByte, nil
+	}
+
+	if !errors.Is(err, os.ErrNotExist) {
+		log.Fatalln("ERR: [Read JWT Secret Key File Failed]: ", err)
+		return nil, err
+	}
+
+	return generateHMACSecret()
 }
 
 // encryptJWT 加密 JWT

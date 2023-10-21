@@ -58,11 +58,11 @@ func TestSession(t *testing.T) {
 		t.Error("Find User By Email Error: ", err)
 	}
 
-	uid, err := jwt_helper.GetJWTUserID(schema.JWT)
+	claims, err := jwt_helper.ParseJWT(schema.JWT)
 	if err != nil {
 		t.Error("Get JWT User ID Error: ", err)
 	}
 
-	assert.Equal(t, u.ID, uid)
+	assert.Equal(t, u.ID, claims.UserID)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
