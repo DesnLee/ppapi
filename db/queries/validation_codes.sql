@@ -21,3 +21,6 @@ UPDATE validation_codes
 SET used_at = NOW()
 WHERE id = $1
 RETURNING *;
+
+-- name: DeleteAllValidationCode :exec
+DELETE FROM validation_codes;
