@@ -2,7 +2,7 @@ BEGIN;
 
 CREATE TABLE validation_codes
 (
-    id         SERIAL PRIMARY KEY,
+    id         BIGSERIAL PRIMARY KEY,
     code       VARCHAR(20)  NOT NULL,
     email      VARCHAR(255) NOT NULL,
     used_at    TIMESTAMPTZ,

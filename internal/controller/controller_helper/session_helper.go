@@ -1,12 +1,12 @@
 package controller_helper
 
 import (
-	"database/sql"
 	"errors"
 	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5"
 	"ppapi.desnlee.com/db/sqlcExec"
 	"ppapi.desnlee.com/internal/database"
 	"ppapi.desnlee.com/internal/model"
@@ -14,15 +14,15 @@ import (
 
 // CheckAndUseValidationCode 校验并使用验证码
 func CheckAndUseValidationCode(c *gin.Context, email, code string) error {
-	tx, err := database.DB.Begin()
+	tx, err := database.DB.Begin(database.DBCtx)
 	if err != nil {
 		log.Println("[Create Database Transaction Failed]: ", err)
 		c.JSON(http.StatusInternalServerError, model.MsgResponse{Msg: "服务器错误"})
 		return err
 	}
-	defer func(tx *sql.Tx) {
-		_ = tx.Rollback()
-	}(tx)
+	defer func(tx *pgx.Tx) {
+		_ = (*tx).Rollback(database.DBCtx)
+	}(&tx)
 
 	qtx := database.Q.WithTx(tx)
 	r, err := qtx.CheckValidationCode(database.DBCtx, sqlcExec.CheckValidationCodeParams{
@@ -43,7 +43,7 @@ func CheckAndUseValidationCode(c *gin.Context, email, code string) error {
 		return err
 	}
 
-	err = tx.Commit()
+	err = tx.Commit(database.DBCtx)
 	if err != nil {
 		return err
 	}
@@ -54,22 +54,22 @@ func CheckAndUseValidationCode(c *gin.Context, email, code string) error {
 // FindOrCreateUserByEmail 查找或创建用户
 func FindOrCreateUserByEmail(c *gin.Context, email string) (sqlcExec.User, error) {
 	u := sqlcExec.User{}
-	tx, err := database.DB.Begin()
+	tx, err := database.DB.Begin(database.DBCtx)
 	if err != nil {
 		log.Println("[Create Database Transaction Failed]: ", err)
 		c.JSON(http.StatusInternalServerError, model.MsgResponse{Msg: "服务器错误"})
 		return u, err
 	}
-	defer func(tx *sql.Tx) {
-		_ = tx.Rollback()
-	}(tx)
+	defer func(tx *pgx.Tx) {
+		_ = (*tx).Rollback(database.DBCtx)
+	}(&tx)
 
 	qtx := database.Q.WithTx(tx)
 	u, err = qtx.FindUserByEmail(database.DBCtx, email)
 
 	if err != nil {
 		// 如果是无记录
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, pgx.ErrNoRows) {
 			// 创建用户
 			u, err = qtx.CreateUser(database.DBCtx, email)
 			if err != nil {
@@ -84,7 +84,7 @@ func FindOrCreateUserByEmail(c *gin.Context, email string) (sqlcExec.User, error
 		}
 	}
 
-	err = tx.Commit()
+	err = tx.Commit(database.DBCtx)
 	if err != nil {
 		return u, err
 	}

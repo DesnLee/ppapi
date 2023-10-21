@@ -1,11 +1,11 @@
 package model
 
 import (
-	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type MeResponseBody struct {
-	ID    uuid.UUID `json:"id"`
-	Email string    `json:"email"`
-	Name  string    `json:"name"`
+	ID    pgtype.UUID `json:"id"`
+	Email string      `json:"email"`
+	Name  string      `json:"name"`
 }

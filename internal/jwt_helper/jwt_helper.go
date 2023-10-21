@@ -1,15 +1,16 @@
 package jwt_helper
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 var SECRET_KEY_FILE_NAME = "secret_key"
 
-func GenerateJWT(id uuid.UUID) (string, error) {
+func GenerateJWT(id pgtype.UUID) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, JWTClaims{
 		UserID: id,
 	})
@@ -31,6 +32,7 @@ func GenerateJWT(id uuid.UUID) (string, error) {
 		log.Println("ERR: [Encrypt JWT Failed]: ", err)
 		return "", err
 	}
+	fmt.Println("JWT: ", tk)
 	return tk, nil
 }
 

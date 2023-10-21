@@ -1,11 +1,12 @@
-version: "2"
-sql:
-  - engine: "postgresql"
-    queries: "db/queries"
-    schema: "db/schemas"
-    gen:
-      go:
-        emit_json_tags: true
-        json_tags_case_style: snake
-        package: "sqlcExec"
-        out: "db/sqlcExec"
+version : "2"
+sql :
+  - engine :  "postgresql"
+    queries : "db/queries"
+    schema :  "db/schemas"
+    gen :
+      go :
+        emit_json_tags :       true
+        json_tags_case_style : snake
+        package :              "sqlcExec"
+        out :                  "db/sqlcExec"
+        sql_package :          "pgx/v5"

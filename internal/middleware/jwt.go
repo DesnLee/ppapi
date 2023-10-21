@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"ppapi.desnlee.com/internal/jwt_helper"
 	"ppapi.desnlee.com/internal/model"
 )
@@ -36,7 +35,7 @@ func JWTMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		if claims.UserID == uuid.Nil {
+		if !claims.UserID.Valid {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, model.MsgResponse{
 				Msg: "token 无效",
 			})

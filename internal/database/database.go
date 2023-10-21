@@ -2,7 +2,6 @@ package database
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"log"
 	"os/exec"
@@ -10,12 +9,13 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
+	"github.com/jackc/pgx/v5"
 	"github.com/spf13/viper"
 	"ppapi.desnlee.com/db/sqlcExec"
 )
 
 var (
-	DB    *sql.DB
+	DB    *pgx.Conn
 	Q     *sqlcExec.Queries
 	DBCtx = context.Background()
 )
@@ -27,22 +27,21 @@ func generateDSN() string {
 
 // sqlc
 func Connect() {
-	db, err := sql.Open("postgres", generateDSN())
-
+	conn, err := pgx.Connect(DBCtx, generateDSN())
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	if err = db.Ping(); err != nil {
+	if err = conn.Ping(DBCtx); err != nil {
 		log.Fatalln(err)
 	}
-	DB = db
+	DB = conn
 	Q = sqlcExec.New(DB)
 	log.Println("数据库连接成功！")
 }
 
 func Close() {
-	if err := DB.Close(); err != nil {
+	if err := DB.Close(DBCtx); err != nil {
 		log.Fatalln(err)
 	} else {
 		log.Println("数据库连接已关闭！")
@@ -129,7 +128,7 @@ func Crud() {
 // }
 //
 // type User struct {
-// 	ID        uuid.UUID `gorm:"primaryKey;type:uuid;default:gen_random_uuid()"`
+// 	ID        pgtype.UUID `gorm:"primaryKey;type:uuid;default:gen_random_uuid()"`
 // 	Email     string
 // 	Phone     string `gorm:"varchar(20);uniqueIndex"`
 // 	CreatedAt time.Time

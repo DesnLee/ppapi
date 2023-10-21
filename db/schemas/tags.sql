@@ -1,6 +1,6 @@
 CREATE TABLE tags
 (
-    id         SERIAL PRIMARY KEY,
+    id         BIGSERIAL PRIMARY KEY,
     user_id    UUID        NOT NULL,
     name       VARCHAR(50) NOT NULL,
     sign       VARCHAR(50) NOT NULL,

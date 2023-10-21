@@ -5,11 +5,11 @@ CREATE TYPE kind AS ENUM ('expenses', 'income');
 --- 创建 items 表
 CREATE TABLE items
 (
-    id          SERIAL PRIMARY KEY,
+    id          BIGSERIAL PRIMARY KEY,
     user_id     UUID        NOT NULL,
-    amount      INT         NOT NULL,
+    amount      BIGINT      NOT NULL,
     kind        kind        NOT NULL,
-    happened_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    happened_at TIMESTAMPTZ NOT NULL,
     created_at  TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at  TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -17,7 +17,7 @@ CREATE TABLE items
 --- 创建 tags 表
 CREATE TABLE tags
 (
-    id         SERIAL PRIMARY KEY,
+    id         BIGSERIAL PRIMARY KEY,
     user_id    UUID        NOT NULL,
     name       VARCHAR(50) NOT NULL,
     sign       VARCHAR(50) NOT NULL,
@@ -30,9 +30,9 @@ CREATE TABLE tags
 --- 创建 items_tags 表
 CREATE TABLE items_tags
 (
-    id         SERIAL PRIMARY KEY,
-    item_id    INT NOT NULL,
-    tag_id     INT NOT NULL,
+    id         BIGSERIAL PRIMARY KEY,
+    item_id    BIGINT      NOT NULL,
+    tag_id     BIGINT      NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

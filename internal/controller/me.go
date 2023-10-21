@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 	"ppapi.desnlee.com/internal/database"
 	"ppapi.desnlee.com/internal/middleware"
 	"ppapi.desnlee.com/internal/model"
@@ -39,7 +39,7 @@ type getResponseBody = model.ResourceResponse[model.MeResponseBody]
 //	@Failure		500				{object}	model.MsgResponse	"服务器错误"
 //	@Router			/api/v1/me [get]
 func (ctl *MeController) Read(c *gin.Context) {
-	userID := c.MustGet("userID").(uuid.UUID)
+	userID := c.MustGet("userID").(pgtype.UUID)
 	u, err := database.Q.FindUserByID(database.DBCtx, userID)
 	if err != nil {
 		log.Println("ERR: [Find User By ID Failed]: ", err)

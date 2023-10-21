@@ -1,7 +1,12 @@
 package controller
 
 import (
+	"fmt"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5/pgtype"
+	"ppapi.desnlee.com/internal/database"
 	"ppapi.desnlee.com/internal/middleware"
 	"ppapi.desnlee.com/internal/model"
 )
@@ -24,14 +29,30 @@ type createItemResponseSuccessBody = model.ResourceResponse[model.CreateItemResp
 //	@Accept			json
 //	@Produce		json
 //	@Param			Authorization	header		string							true	"token字符串，格式 `Bearer {token}`"
-//	@Param			body			body		model.CreateItemRequestBody		true	"传入条目信息"
-//	@Success		200				{object}	createItemResponseSuccessBody	"成功获取到信息"
+//	@Param			body			body		model.CreateItemRequestBody		true	"传入记账信息"
+//	@Success		200				{object}	createItemResponseSuccessBody	"成功创建记账条目"
 //	@Failure		401				{object}	model.MsgResponse				"未授权，token 无效"
 //	@Failure		500				{object}	model.MsgResponse				"服务器错误"
 //	@Router			/api/v1/item [post]
 func (ctl *ItemController) Create(c *gin.Context) {
-	// TODO implement me
-	panic("implement me")
+	userID := c.MustGet("userID").(pgtype.UUID)
+	body := model.CreateItemRequestBody{}
+	if err := c.ShouldBindJSON(&body); err != nil {
+		c.JSON(http.StatusBadRequest, model.MsgResponse{
+			Msg: "参数错误",
+		})
+		return
+	}
+
+	tags, err := database.Q.FindTagsByIDs(database.DBCtx, body.TagIDs)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, model.MsgResponse{
+			Msg: "服务器错误",
+		})
+		return
+	}
+	fmt.Println(tags)
+	fmt.Println(userID)
 }
 
 func (ctl *ItemController) Read(c *gin.Context) {
