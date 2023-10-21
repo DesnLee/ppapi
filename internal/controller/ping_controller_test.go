@@ -5,13 +5,13 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
+	"ppapi.desnlee.com/pkg"
 )
 
 func TestPing(t *testing.T) {
-	r := gin.Default()
-	gin.SetMode(gin.ReleaseMode)
+	r, cleaner := pkg.InitTestEnv()
+	defer cleaner()
 	r.GET("/ping", PingHandler)
 
 	w := httptest.NewRecorder()

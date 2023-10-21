@@ -17,7 +17,8 @@ import (
 )
 
 func TestSession(t *testing.T) {
-	r := pkg.SetupTest()
+	r, cleaner := pkg.InitTestEnv()
+	defer cleaner()
 	(&SessionController{}).Register(r.Group("/api"))
 
 	w := httptest.NewRecorder()

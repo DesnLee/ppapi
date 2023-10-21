@@ -15,7 +15,8 @@ import (
 )
 
 func TestValidationCode(t *testing.T) {
-	r := pkg.SetupTest()
+	r, cleaner := pkg.InitTestEnv()
+	defer cleaner()
 	viper.Set("EMAIL.SMTP.HOST", "localhost")
 	viper.Set("EMAIL.SMTP.PORT", "1025")
 	(&ValidationCodeController{}).Register(r.Group("/api"))

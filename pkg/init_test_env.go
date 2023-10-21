@@ -6,10 +6,12 @@ import (
 	"ppapi.desnlee.com/internal/database"
 )
 
-func SetupTest() *gin.Engine {
+func InitTestEnv() (*gin.Engine, func()) {
 	database.Connect()
 
 	r := gin.Default()
 	gin.SetMode(gin.ReleaseMode)
-	return r
+	return r, func() {
+		database.Close()
+	}
 }
