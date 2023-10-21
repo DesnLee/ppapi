@@ -39,7 +39,7 @@ func GenerateJWT(id pgtype.UUID) (string, error) {
 func ParseJWT(tk string) (*JWTClaims, error) {
 	tokenString, err := decryptJWT(tk)
 	if err != nil {
-		log.Fatalln("ERR: [Decrypt JWT Failed]: ", err)
+		log.Println("ERR: [Decrypt JWT Failed]: ", err)
 		return &JWTClaims{}, err
 	}
 

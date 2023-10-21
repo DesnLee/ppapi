@@ -30,12 +30,12 @@ func generateHMACSecret() ([]byte, error) {
 	key := make([]byte, 32)
 	_, err := rand.Read(key)
 	if err != nil {
-		log.Fatalln("ERR: [Generate JWT Secret Key Failed]: ", err)
+		log.Println("ERR: [Generate JWT Secret Key Failed]: ", err)
 		return nil, err
 	}
 	err = os.WriteFile(filePath, key, 0644)
 	if err != nil {
-		log.Fatalln("ERR: [Write JWT Secret Key File Failed]: ", err)
+		log.Println("ERR: [Write JWT Secret Key File Failed]: ", err)
 		return nil, err
 	}
 
@@ -52,7 +52,7 @@ func getHMACSecret() ([]byte, error) {
 	}
 
 	if !errors.Is(err, os.ErrNotExist) {
-		log.Fatalln("ERR: [Read JWT Secret Key File Failed]: ", err)
+		log.Println("ERR: [Read JWT Secret Key File Failed]: ", err)
 		return nil, err
 	}
 

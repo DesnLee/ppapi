@@ -42,7 +42,7 @@ func Send(to []string) {
 	m.SetBody("text/html", "Hello <b>LJK</b>")
 
 	if err := d.DialAndSend(m); err != nil {
-		log.Fatalln(err)
+		log.Println(err)
 	}
 }
 
