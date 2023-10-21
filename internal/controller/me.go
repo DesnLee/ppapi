@@ -37,8 +37,8 @@ type getResponseBody = model.ResourceResponse[model.MeResponseBody]
 //	@Success		200				{object}	getResponseBody		"成功获取到用户信息"
 //	@Failure		401				{object}	model.MsgResponse	"未授权，token 无效"
 //	@Failure		500				{object}	model.MsgResponse	"服务器错误"
-//	@Router			/v1/me [get]
-func (ctl *Me) Read(c *gin.Context) {
+//	@Router			/api/v1/me [get]
+func (ctl *MeController) Read(c *gin.Context) {
 	authStr := c.GetHeader("Authorization")
 	if authStr == "" {
 		c.JSON(401, model.MsgResponse{

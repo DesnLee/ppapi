@@ -30,7 +30,7 @@ func (ctl *ValidationCodeController) Register(g *gin.RouterGroup) {
 //	@Success		204
 //	@Failure		400	{object}	model.MsgResponse	"参数错误"
 //	@Failure		500	{object}	model.MsgResponse	"服务器错误"
-//	@Router			/v1/validation_code [post]
+//	@Router			/api/v1/validation_code [post]
 func (ctl *ValidationCodeController) Create(c *gin.Context) {
 	body := model.ValidationCodeRequestBody{}
 
