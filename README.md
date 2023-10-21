@@ -31,7 +31,7 @@ migrate create -ext sql -dir db/migrations -seq migration_name
 ```bash
 go build . && ./ppapi db migrate:up
 # 或者
-migrate -database "postgres://mangosteen:123456@pg-for-go-mangosteen:5432/mangosteen_dev?sslmode=disable" -source "file://$(pwd)/db/migrations" up
+migrate -database "postgres://root:123456@localhost:5432/pp_dev?sslmode=disable" -source "file://$(pwd)/db/migrations" up
 ```
 
 ## 回滚迁移文件
