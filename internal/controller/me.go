@@ -41,7 +41,7 @@ type getResponseBody = model.ResourceResponse[model.MeResponseBody]
 func (ctl *MeController) Read(c *gin.Context) {
 	authStr := c.GetHeader("Authorization")
 	if authStr == "" {
-		c.JSON(401, model.MsgResponse{
+		c.JSON(http.StatusUnauthorized, model.MsgResponse{
 			Msg: "未携带 token",
 		})
 		return
@@ -49,7 +49,7 @@ func (ctl *MeController) Read(c *gin.Context) {
 
 	parts := strings.SplitN(authStr, " ", 2)
 	if !(len(parts) == 2 && parts[0] == "Bearer") {
-		c.JSON(401, model.MsgResponse{
+		c.JSON(http.StatusUnauthorized, model.MsgResponse{
 			Msg: "token 格式错误",
 		})
 		return
@@ -57,7 +57,7 @@ func (ctl *MeController) Read(c *gin.Context) {
 
 	claims, err := jwt_helper.ParseJWT(parts[1])
 	if err != nil {
-		c.JSON(401, model.MsgResponse{
+		c.JSON(http.StatusUnauthorized, model.MsgResponse{
 			Msg: "token 无效",
 		})
 		return
@@ -65,7 +65,7 @@ func (ctl *MeController) Read(c *gin.Context) {
 
 	userID := claims.UserID
 	if userID == uuid.Nil {
-		c.JSON(401, model.MsgResponse{
+		c.JSON(http.StatusUnauthorized, model.MsgResponse{
 			Msg: "token 无效",
 		})
 		return
@@ -74,7 +74,7 @@ func (ctl *MeController) Read(c *gin.Context) {
 	u, err := database.Q.FindUserByID(database.DBCtx, userID)
 	if err != nil {
 		log.Println("ERR: [Find User By ID Failed]: ", err)
-		c.JSON(500, model.MsgResponse{
+		c.JSON(http.StatusInternalServerError, model.MsgResponse{
 			Msg: "服务器错误",
 		})
 		return

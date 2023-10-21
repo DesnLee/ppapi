@@ -35,14 +35,14 @@ func (ctl *ValidationCodeController) Create(c *gin.Context) {
 	body := model.ValidationCodeRequestBody{}
 
 	if err := c.ShouldBindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, model.MsgResponse{Msg: "参数错误"})
+		c.JSON(http.StatusUnprocessableEntity, model.MsgResponse{Msg: "参数错误"})
 		return
 	}
 
 	code, err := pkg.GenerateRandomCode(6)
 	if err != nil {
 		log.Println("[RandCode Failed]: ", err)
-		c.JSON(http.StatusInternalServerError, model.MsgResponse{Msg: "发送失败"})
+		c.JSON(http.StatusInternalServerError, model.MsgResponse{Msg: "服务器错误"})
 		return
 	}
 
@@ -52,14 +52,14 @@ func (ctl *ValidationCodeController) Create(c *gin.Context) {
 	})
 	if err != nil {
 		log.Println("[CreateValidationCode Failed]: ", err)
-		c.JSON(http.StatusInternalServerError, model.MsgResponse{Msg: "发送失败"})
+		c.JSON(http.StatusInternalServerError, model.MsgResponse{Msg: "服务器错误"})
 		return
 	}
 
 	err = email.SendValidationCode(row.Email, row.Code)
 	if err != nil {
 		log.Println("[SendValidationCode Failed]: ", err)
-		c.JSON(http.StatusInternalServerError, model.MsgResponse{Msg: "发送失败"})
+		c.JSON(http.StatusInternalServerError, model.MsgResponse{Msg: "发送邮件失败"})
 		return
 	} else {
 		c.Status(http.StatusNoContent)

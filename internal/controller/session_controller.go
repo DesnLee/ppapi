@@ -33,7 +33,7 @@ func (ctl *SessionController) Create(c *gin.Context) {
 	body := model.SessionRequestBody{}
 
 	if err := c.ShouldBindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, model.MsgResponse{Msg: "参数错误"})
+		c.JSON(http.StatusUnprocessableEntity, model.MsgResponse{Msg: "参数错误"})
 		return
 	}
 
@@ -49,7 +49,7 @@ func (ctl *SessionController) Create(c *gin.Context) {
 
 	jwt, err := jwt_helper.GenerateJWT(u.ID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, model.MsgResponse{Msg: "参数错误"})
+		c.JSON(http.StatusInternalServerError, model.MsgResponse{Msg: "服务器错误"})
 		return
 	}
 
