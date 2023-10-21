@@ -1,0 +1,8 @@
+CREATE TABLE items_tags
+(
+    id         SERIAL PRIMARY KEY,
+    item_id    INT NOT NULL,
+    tag_id     INT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
