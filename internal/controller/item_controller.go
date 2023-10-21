@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	"ppapi.desnlee.com/internal/middleware"
 	"ppapi.desnlee.com/internal/model"
 )
 
@@ -9,6 +10,7 @@ type ItemController struct{}
 
 func (ctl *ItemController) Register(g *gin.RouterGroup) {
 	v1 := g.Group("/v1")
+	v1.Use(middleware.JWTMiddleware())
 	v1.POST("/item", ctl.Create)
 }
 

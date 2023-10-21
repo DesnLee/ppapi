@@ -3,12 +3,11 @@ package controller
 import (
 	"log"
 	"net/http"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"ppapi.desnlee.com/internal/database"
-	"ppapi.desnlee.com/internal/jwt_helper"
+	"ppapi.desnlee.com/internal/middleware"
 	"ppapi.desnlee.com/internal/model"
 )
 
@@ -16,6 +15,7 @@ type MeController struct{}
 
 func (ctl *MeController) Register(g *gin.RouterGroup) {
 	v1 := g.Group("/v1")
+	v1.Use(middleware.JWTMiddleware())
 	v1.GET("/me", ctl.Read)
 }
 
@@ -39,38 +39,7 @@ type getResponseBody = model.ResourceResponse[model.MeResponseBody]
 //	@Failure		500				{object}	model.MsgResponse	"服务器错误"
 //	@Router			/api/v1/me [get]
 func (ctl *MeController) Read(c *gin.Context) {
-	authStr := c.GetHeader("Authorization")
-	if authStr == "" {
-		c.JSON(http.StatusUnauthorized, model.MsgResponse{
-			Msg: "未携带 token",
-		})
-		return
-	}
-
-	parts := strings.SplitN(authStr, " ", 2)
-	if !(len(parts) == 2 && parts[0] == "Bearer") {
-		c.JSON(http.StatusUnauthorized, model.MsgResponse{
-			Msg: "token 格式错误",
-		})
-		return
-	}
-
-	claims, err := jwt_helper.ParseJWT(parts[1])
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, model.MsgResponse{
-			Msg: "token 无效",
-		})
-		return
-	}
-
-	userID := claims.UserID
-	if userID == uuid.Nil {
-		c.JSON(http.StatusUnauthorized, model.MsgResponse{
-			Msg: "token 无效",
-		})
-		return
-	}
-
+	userID := c.MustGet("userID").(uuid.UUID)
 	u, err := database.Q.FindUserByID(database.DBCtx, userID)
 	if err != nil {
 		log.Println("ERR: [Find User By ID Failed]: ", err)
