@@ -20,6 +20,7 @@ func (ctl *SessionController) Register(g *gin.RouterGroup) {
 //
 //	@Summary		用户登录
 //	@Description	用户登录并获取 token
+//	@Tags			登录
 //	@Accept			json
 //	@Produce		json
 //	@Param			body	body		model.SessionRequestBody	true	"传入邮箱和验证码"

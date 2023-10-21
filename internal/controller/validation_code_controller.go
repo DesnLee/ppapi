@@ -23,6 +23,7 @@ func (ctl *ValidationCodeController) Register(g *gin.RouterGroup) {
 //
 //	@Summary		邮件验证码
 //	@Description	发送邮件验证码
+//	@Tags			登录
 //	@Accept			json
 //	@Produce		json
 //	@Param			body	body	model.ValidationCodeRequestBody	true	"传入接收验证码的邮箱，未注册将会自动注册"

@@ -19,8 +19,6 @@ import (
 //	@host		localhost:9999
 //	@BasePath	/api/v1
 
-//	@securityDefinitions.basic	Bearer
-
 // @externalDocs.description	OpenAPI
 // @externalDocs.url			https://swagger.io/resources/open-api/
 func main() {
