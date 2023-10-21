@@ -52,10 +52,8 @@ func (ctl *SessionController) Create(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, model.DataResponse[model.SessionResponseBody]{
-		Data: model.SessionResponseBody{
-			JWT: jwt,
-		},
+	c.JSON(http.StatusOK, model.SessionResponseBody{
+		JWT: jwt,
 	})
 }
 

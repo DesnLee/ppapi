@@ -8,11 +8,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"ppapi.desnlee.com/db/sqlcExec"
 	"ppapi.desnlee.com/internal/database"
 	"ppapi.desnlee.com/internal/jwt_helper"
+	"ppapi.desnlee.com/internal/model"
 	"ppapi.desnlee.com/pkg"
 )
 
@@ -38,9 +38,9 @@ func TestSession(t *testing.T) {
 		log.Fatal("Insert Code to DB Error: ", err)
 	}
 
-	body := gin.H{
-		"email": email,
-		"code":  code,
+	body := model.SessionRequestBody{
+		Email: email,
+		Code:  code,
 	}
 	bodyStr, _ := json.Marshal(body)
 	req, _ := http.NewRequest("POST", "/api/v1/session", strings.NewReader(string(bodyStr)))
@@ -48,9 +48,7 @@ func TestSession(t *testing.T) {
 	r.ServeHTTP(w, req)
 
 	// 校验返回的消息
-	schema := struct {
-		JWT string `json:"jwt"`
-	}{}
+	schema := model.SessionResponseBody{}
 	if err = json.Unmarshal(w.Body.Bytes(), &schema); err != nil {
 		t.Error("Unmarshal Response Body Error: ", err)
 	}
