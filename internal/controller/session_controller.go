@@ -22,11 +22,11 @@ func (ctl *SessionController) Register(g *gin.RouterGroup) {
 //	@Description	用户登录并获取 token
 //	@Accept			json
 //	@Produce		json
-//	@Param			body	body		model.SessionRequestBody						true	"传入邮箱和验证码"
-//	@Success		200		{object}	model.DataResponse[model.SessionResponseBody]	"成功获取到 jwt"
-//	@Failure		400		{object}	model.MsgResponse								"参数错误"
-//	@Failure		401		{object}	model.MsgResponse								"验证码错误"
-//	@Failure		500		{object}	model.MsgResponse								"服务器错误"
+//	@Param			body	body		model.SessionRequestBody	true	"传入邮箱和验证码"
+//	@Success		200		{object}	model.SessionResponseBody	"成功获取到 jwt"
+//	@Failure		400		{object}	model.MsgResponse			"参数错误"
+//	@Failure		401		{object}	model.MsgResponse			"验证码错误"
+//	@Failure		500		{object}	model.MsgResponse			"服务器错误"
 //	@Router			/session [post]
 func (ctl *SessionController) Create(c *gin.Context) {
 	body := model.SessionRequestBody{}
