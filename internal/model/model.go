@@ -13,5 +13,5 @@ type ResourcesResponse[T any] struct {
 }
 
 type MsgResponse struct {
-	Msg string `json:"msg"`
+	Msg string `json:"msg" example:"错误消息"` // 错误响应消息
 }
