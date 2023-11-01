@@ -61,8 +61,8 @@ func TestMeWithJWT(t *testing.T) {
 	r.ServeHTTP(w, req)
 
 	// 反序列化返回的消息
-	schema := model.ResourceResponse[model.MeResponseBody]{
-		Resource: model.MeResponseBody{},
+	schema := model.ResourceResponse[model.MeResponseData]{
+		Resource: model.MeResponseData{},
 	}
 	if err = json.Unmarshal(w.Body.Bytes(), &schema); err != nil {
 		t.Error("Unmarshal Response Body Error: ", err)

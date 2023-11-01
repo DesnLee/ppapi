@@ -24,8 +24,6 @@ func (ctl *MeController) Create(c *gin.Context) {
 	panic("implement me")
 }
 
-type getResponseBody = model.ResourceResponse[model.MeResponseBody]
-
 // Read godoc
 //
 //	@Summary		获取当前用户
@@ -33,10 +31,10 @@ type getResponseBody = model.ResourceResponse[model.MeResponseBody]
 //	@Tags			用户
 //	@Accept			json
 //	@Produce		json
-//	@Param			Authorization	header		string				true	"token字符串，格式 `Bearer {token}`"
-//	@Success		200				{object}	getResponseBody		"成功获取到用户信息"
-//	@Failure		401				{object}	model.MsgResponse	"未授权，token 无效"
-//	@Failure		500				{object}	model.MsgResponse	"服务器错误"
+//	@Param			Authorization	header		string						true	"token字符串，格式 `Bearer {token}`"
+//	@Success		200				{object}	model.MeResponseSuccessBody	"成功获取到用户信息"
+//	@Failure		401				{object}	model.MsgResponse			"未授权，token 无效"
+//	@Failure		500				{object}	model.MsgResponse			"服务器错误"
 //	@Router			/api/v1/me [get]
 func (ctl *MeController) Read(c *gin.Context) {
 	userID := c.MustGet("userID").(pgtype.UUID)
@@ -49,8 +47,8 @@ func (ctl *MeController) Read(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, model.ResourceResponse[model.MeResponseBody]{
-		Resource: model.MeResponseBody{
+	c.JSON(http.StatusOK, model.ResourceResponse[model.MeResponseData]{
+		Resource: model.MeResponseData{
 			ID:    u.ID,
 			Name:  u.Name,
 			Email: u.Email,
