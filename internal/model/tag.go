@@ -5,8 +5,8 @@ import (
 )
 
 type TagResponse struct {
-	ID   int64         `json:"id"`
-	Name string        `json:"name"`
-	Sign string        `json:"sign"`
-	Kind sqlcExec.Kind `json:"kind"`
+	ID   int64         `json:"id" example:"1"`
+	Name string        `json:"name" example:"餐饮"`
+	Sign string        `json:"sign" example:"😄"`
+	Kind sqlcExec.Kind `json:"kind" swaggertype:"string" example:"expenses" enums:"expenses,incomes"`
 }

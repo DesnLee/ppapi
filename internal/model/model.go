@@ -6,9 +6,9 @@ type ResourceResponse[T any] struct {
 type ResourcesResponse[T any] struct {
 	Resources []T `json:"resources"`
 	Pager     struct {
-		Page    int `json:"page"`
-		PerPage int `json:"per_page"`
-		Count   int `json:"count"`
+		Page    int `json:"page" example:"1"`
+		PerPage int `json:"per_page" example:"10"`
+		Count   int `json:"count" example:"100"`
 	} `json:"pager"`
 }
 
