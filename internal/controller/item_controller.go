@@ -26,11 +26,11 @@ func (ctl *ItemController) Register(g *gin.RouterGroup) {
 //	@Tags			账单
 //	@Accept			json
 //	@Produce		json
-//	@Param			Authorization	header		string								true	"token字符串，格式 `Bearer {token}`"
-//	@Param			body			body		model.CreateItemRequestBody			true	"传入记账信息"
-//	@Success		200				{object}	model.CreateItemResponseSuccessBody	"成功创建记账条目"
-//	@Failure		401				{object}	model.MsgResponse					"未授权，token 无效"
-//	@Failure		500				{object}	model.MsgResponse					"服务器错误"
+//	@Security		BearerAuth
+//	@Param			body	body		model.CreateItemRequestBody			true	"传入记账信息"
+//	@Success		200		{object}	model.CreateItemResponseSuccessBody	"成功创建记账条目"
+//	@Failure		401		{object}	model.MsgResponse					"未授权，token 无效"
+//	@Failure		500		{object}	model.MsgResponse					"服务器错误"
 //	@Router			/api/v1/item [post]
 func (ctl *ItemController) Create(c *gin.Context) {
 	userID := c.MustGet("userID").(pgtype.UUID)

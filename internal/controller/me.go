@@ -31,10 +31,10 @@ func (ctl *MeController) Create(c *gin.Context) {
 //	@Tags			用户
 //	@Accept			json
 //	@Produce		json
-//	@Param			Authorization	header		string						true	"token字符串，格式 `Bearer {token}`"
-//	@Success		200				{object}	model.MeResponseSuccessBody	"成功获取到用户信息"
-//	@Failure		401				{object}	model.MsgResponse			"未授权，token 无效"
-//	@Failure		500				{object}	model.MsgResponse			"服务器错误"
+//	@Security		BearerAuth
+//	@Success		200	{object}	model.MeResponseSuccessBody	"成功获取到用户信息"
+//	@Failure		401	{object}	model.MsgResponse			"未授权，token 无效"
+//	@Failure		500	{object}	model.MsgResponse			"服务器错误"
 //	@Router			/api/v1/me [get]
 func (ctl *MeController) Read(c *gin.Context) {
 	userID := c.MustGet("userID").(pgtype.UUID)
