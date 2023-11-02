@@ -41,7 +41,7 @@ func validateHappenedAt(happenedAt string) error {
 	return nil
 }
 
-func validateTagIDs(ids []int64) error {
+func validateTagIDs(uid pgtype.UUID, ids []int64) error {
 	if len(ids) == 0 {
 		return fmt.Errorf("至少选择一个标签")
 	}
@@ -58,6 +58,7 @@ func validateTagIDs(ids []int64) error {
 		// 否则，将元素添加到map中
 		seen[id] = true
 	}
+
 	// 如果没有找到重复项，则去数据库中查询是否存在这些标签
 	tags, err := database.Q.FindTagsByIDs(database.DBCtx, ids)
 	if err != nil {
@@ -66,11 +67,16 @@ func validateTagIDs(ids []int64) error {
 	if len(tags) != len(ids) {
 		return fmt.Errorf("存在无效标签")
 	}
+	for _, tag := range tags {
+		if tag.UserID != uid {
+			return fmt.Errorf("存在无效标签")
+		}
+	}
 
 	return nil
 }
 
-func ValidateCreateItemRequestBody(b *model.CreateItemRequestBody) error {
+func ValidateCreateItemRequestBody(uid pgtype.UUID, b *model.CreateItemRequestBody) error {
 	if err := validateAmount(b.Amount); err != nil {
 		return err
 	}
@@ -80,7 +86,7 @@ func ValidateCreateItemRequestBody(b *model.CreateItemRequestBody) error {
 	if err := validateHappenedAt(b.HappenedAt); err != nil {
 		return err
 	}
-	if err := validateTagIDs(b.TagIDs); err != nil {
+	if err := validateTagIDs(uid, b.TagIDs); err != nil {
 		return err
 	}
 	return nil

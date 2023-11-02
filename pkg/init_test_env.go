@@ -19,6 +19,18 @@ func InitTestEnv() (*gin.Engine, func()) {
 		log.Fatalln("Delete All Validation Code Error: ", err)
 	}
 
+	if err := database.Q.DeleteAllTag(database.DBCtx); err != nil {
+		log.Fatalln("Delete All Tag Error: ", err)
+	}
+
+	if err := database.Q.DeleteAllItem(database.DBCtx); err != nil {
+		log.Fatalln("Delete All Item Error: ", err)
+	}
+
+	if err := database.Q.DeleteAllItemTagRelation(database.DBCtx); err != nil {
+		log.Fatalln("Delete All Item Tag Relation Error: ", err)
+	}
+
 	r := gin.Default()
 	gin.SetMode(gin.ReleaseMode)
 	return r, func() {

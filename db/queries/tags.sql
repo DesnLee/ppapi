@@ -12,3 +12,6 @@ WHERE id = $1;
 SELECT *
 FROM tags
 WHERE id = ANY($1::BIGINT[]);
+
+-- name: DeleteAllTag :exec
+DELETE FROM tags;

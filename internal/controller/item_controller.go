@@ -42,7 +42,7 @@ func (ctl *ItemController) Create(c *gin.Context) {
 		return
 	}
 
-	if err := controller_helper.ValidateCreateItemRequestBody(&body); err != nil {
+	if err := controller_helper.ValidateCreateItemRequestBody(userID, &body); err != nil {
 		c.JSON(http.StatusUnprocessableEntity, model.MsgResponse{
 			Msg: err.Error(),
 		})
