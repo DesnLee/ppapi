@@ -9,11 +9,8 @@ FROM items
 WHERE id = $1
 LIMIT 1;
 
--- name: ListItemsByUserID :many
-SELECT items.id,
-       items.amount,
-       items.kind,
-       items.happened_at,
+-- name: ListItemsByUserIDWithCondition :many
+SELECT items.*,
        array_agg(items_tags.tag_id)::BIGINT[] AS tag_ids
 FROM items
          LEFT JOIN
@@ -25,10 +22,12 @@ GROUP BY items.id
 ORDER BY happened_at DESC
 OFFSET $2 LIMIT $3;
 
--- name: CountItemsByUserID :one
+-- name: CountItemsByUserIDWithCondition :one
 SELECT COUNT(*)
 FROM items
-WHERE user_id = $1;
+WHERE user_id = $1
+  AND sqlc.arg(happened_after) <= happened_at
+  AND happened_at <= sqlc.arg(happened_before);
 
 -- name: DeleteAllItem :exec
 DELETE

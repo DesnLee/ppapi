@@ -53,7 +53,7 @@ func TestCreateItem(t *testing.T) {
 		TagIDs:     []int64{tag.ID},
 	}
 	bodyStr, _ := json.Marshal(body)
-	req, _ := http.NewRequest("POST", "/api/v1/item", strings.NewReader(string(bodyStr)))
+	req, _ := http.NewRequest("POST", "/api/v1/items", strings.NewReader(string(bodyStr)))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Bearer "+jwtStr)
 	r.ServeHTTP(w, req)
