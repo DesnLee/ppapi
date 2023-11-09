@@ -215,7 +215,9 @@ func generateQueryItemsCondition(uid pgtype.UUID, b model.GetItemsRequestBody) (
 
 // GetAndCountItemsByUserID 获取账单列表
 func GetAndCountItemsByUserID(uid pgtype.UUID, b model.GetItemsRequestBody) (model.GetItemsResponseSuccessBody, error) {
-	var res model.GetItemsResponseSuccessBody
+	res := model.GetItemsResponseSuccessBody{
+		Resources: []model.GetItemsResponseData{},
+	}
 
 	tx, err := database.DB.Begin(database.DBCtx)
 	if err != nil {
