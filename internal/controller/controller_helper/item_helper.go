@@ -36,7 +36,7 @@ func validateHappenedAt(happenedAt string) error {
 	}
 
 	now := time.Now()
-	if parsed, err := time.Parse("2006-01-02", happenedAt); err != nil {
+	if parsed, err := time.Parse(time.RFC3339, happenedAt); err != nil {
 		return fmt.Errorf("账单时间格式错误")
 	} else if parsed.After(now) {
 		return fmt.Errorf("账单时间不能晚于当前时间")
@@ -95,8 +95,8 @@ func validateDateRange(after, before string) error {
 		}
 	}
 	if after != "" && before != "" {
-		parsedAfter, _ := time.Parse("2006-01-02", after)
-		parsedBefore, _ := time.Parse("2006-01-02", before)
+		parsedAfter, _ := time.Parse(time.RFC3339, after)
+		parsedBefore, _ := time.Parse(time.RFC3339, before)
 
 		if parsedAfter.After(parsedBefore) {
 			return fmt.Errorf("after 不能晚于 before")
@@ -176,7 +176,7 @@ func CreateItem(uid pgtype.UUID, b *model.CreateItemRequestBody) (model.CreateIt
 		ID:         r.ID,
 		Amount:     r.Amount,
 		Kind:       r.Kind,
-		HappenedAt: r.HappenedAt.Time.Format("2006-01-02"),
+		HappenedAt: r.HappenedAt.Time.Format(time.RFC3339),
 		TagIDs:     b.TagIDs,
 	}, nil
 }
@@ -198,13 +198,14 @@ func generateQueryItemsCondition(uid pgtype.UUID, b model.GetItemsRequestBody) (
 	}
 
 	if b.HappenedBefore == "" {
-		b.HappenedBefore = time.Now().Format("2006-01-02")
+		b.HappenedBefore = time.Now().Local().Format(time.RFC3339)
 	}
 	before, _ := pkg.CreatePgTimeTZ(b.HappenedBefore)
 	condition.HappenedBefore = before
 
 	if b.HappenedAfter == "" {
-		b.HappenedAfter = "1970-01-01"
+		// RFC3339 的最小值
+		b.HappenedAfter = "1970-01-01T00:00:00Z"
 	}
 	after, _ := pkg.CreatePgTimeTZ(b.HappenedAfter)
 	condition.HappenedAfter = after
@@ -255,7 +256,7 @@ func GetAndCountItemsByUserID(uid pgtype.UUID, b model.GetItemsRequestBody) (mod
 				ID:         item.ID,
 				Amount:     item.Amount,
 				Kind:       item.Kind,
-				HappenedAt: item.HappenedAt.Time.Format("2006-01-02"),
+				HappenedAt: item.HappenedAt.Time.Local().Format(time.RFC3339),
 				TagIDs:     item.TagIds,
 			},
 			Tags: []model.TagResponse{},

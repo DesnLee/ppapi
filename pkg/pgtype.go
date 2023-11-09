@@ -8,7 +8,7 @@ import (
 )
 
 func CreatePgTimeTZ(s string) (pgtype.Timestamptz, error) {
-	tm, err := time.Parse("2006-01-02", s)
+	tm, err := time.Parse(time.RFC3339, s)
 	if err != nil {
 		return pgtype.Timestamptz{}, fmt.Errorf("时间格式错误")
 	}

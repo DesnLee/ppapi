@@ -5,7 +5,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	_ "ppapi.desnlee.com/config"
+	"ppapi.desnlee.com/db/sqlcExec"
 	"ppapi.desnlee.com/internal/database"
+	"ppapi.desnlee.com/internal/jwt_helper"
 )
 
 func InitTestEnv() (*gin.Engine, func()) {
@@ -36,4 +38,20 @@ func InitTestEnv() (*gin.Engine, func()) {
 	return r, func() {
 		database.Close()
 	}
+}
+
+func TestCreateUserAndJWT() (sqlcExec.User, string) {
+	// 创建用户
+	u, err := database.Q.CreateUser(database.DBCtx, "test@qq.com")
+	if err != nil {
+		log.Fatal("Create User Error: ", err)
+	}
+
+	// 生成 JWT
+	jwtStr, err := jwt_helper.GenerateJWT(u.ID)
+	if err != nil {
+		log.Fatal("Generate JWT Error: ", err)
+	}
+
+	return u, jwtStr
 }
