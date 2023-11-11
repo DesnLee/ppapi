@@ -1,7 +1,6 @@
 package jwt_helper
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -32,7 +31,7 @@ func GenerateJWT(id pgtype.UUID) (string, error) {
 		log.Println("ERR: [Encrypt JWT Failed]: ", err)
 		return "", err
 	}
-	fmt.Println("JWT: ", tk)
+	// fmt.Println("JWT: ", tk)
 	return tk, nil
 }
 

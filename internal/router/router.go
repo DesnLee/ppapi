@@ -20,6 +20,7 @@ var controllers = []controller.Controller{
 	&controller.ValidationCodeController{},
 	&controller.MeController{},
 	&controller.ItemController{},
+	&controller.TagController{},
 }
 
 func New() *gin.Engine {

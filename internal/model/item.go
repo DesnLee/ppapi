@@ -28,7 +28,7 @@ type GetItemsRequestBody struct {
 }
 type GetItemsResponseData struct {
 	CreateItemResponseData
-	Tags []TagResponse `json:"tags"`
+	Tags []Tag `json:"tags"`
 }
 type GetItemsResponseSuccessBody = ResourcesResponse[GetItemsResponseData]
 

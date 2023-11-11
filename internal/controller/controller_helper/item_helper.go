@@ -271,7 +271,7 @@ func GetAndCountItemsByUserID(uid pgtype.UUID, b model.GetItemsRequestBody) (mod
 				HappenedAt: item.HappenedAt.Time.Local().Format(time.RFC3339),
 				TagIDs:     item.TagIds,
 			},
-			Tags: []model.TagResponse{},
+			Tags: []model.Tag{},
 		})
 	}
 
@@ -298,11 +298,10 @@ func GetAndCountItemsByUserID(uid pgtype.UUID, b model.GetItemsRequestBody) (mod
 		for _, id := range item.TagIDs {
 			for _, tag := range tags {
 				if id == tag.ID {
-					res.Resources[i].Tags = append(res.Resources[i].Tags, model.TagResponse{
+					res.Resources[i].Tags = append(res.Resources[i].Tags, model.Tag{
 						ID:   tag.ID,
 						Name: tag.Name,
 						Sign: tag.Sign,
-						Kind: tag.Kind,
 					})
 				}
 			}
