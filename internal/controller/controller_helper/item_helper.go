@@ -185,12 +185,12 @@ func CreateItem(uid pgtype.UUID, b *model.CreateItemRequestBody) (model.CreateIt
 func generateDateRange(a string, b string) (pgtype.Timestamptz, pgtype.Timestamptz) {
 	if a == "" {
 		// RFC3339 的最小值
-		a = "1970-01-01T00:00:00Z"
+		a = time.Now().AddDate(-50, 0, 0).Local().Format(time.RFC3339)
 	}
 	after, _ := pkg.CreatePgTimeTZ(a)
 
 	if b == "" {
-		b = time.Now().Local().Format(time.RFC3339)
+		b = time.Now().AddDate(0, 0, 1).Local().Format(time.RFC3339)
 	}
 	before, _ := pkg.CreatePgTimeTZ(b)
 

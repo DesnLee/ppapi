@@ -70,16 +70,16 @@ func (ctl *ItemController) Create(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			query	query		model.GetItemsRequestBody			true	"传入查询条件"
-//	@Success		200		{object}	model.GetItemsResponseSuccessBody	"成功查询收支信息"
-//	@Failure		401		{object}	model.MsgResponse					"未授权，token 无效"
-//	@Failure		422		{object}	model.MsgResponse					"参数错误"
-//	@Failure		500		{object}	model.MsgResponse					"服务器错误"
+//	@Param			query	query		model.GetBalanceRequestBody		true	"传入查询条件"
+//	@Success		200		{object}	model.GetBalanceResponseData	"成功查询收支信息"
+//	@Failure		401		{object}	model.MsgResponse				"未授权，token 无效"
+//	@Failure		422		{object}	model.MsgResponse				"参数错误"
+//	@Failure		500		{object}	model.MsgResponse				"服务器错误"
 //	@Router			/api/v1/items/balance [get]
 func (ctl *ItemController) GetBalance(c *gin.Context) {
 	userID := c.MustGet("userID").(pgtype.UUID)
 	body := model.GetBalanceRequestBody{}
-	if err := c.ShouldBindJSON(&body); err != nil {
+	if err := c.ShouldBindQuery(&body); err != nil {
 		c.JSON(http.StatusBadRequest, model.MsgResponse{
 			Msg: "参数错误",
 		})

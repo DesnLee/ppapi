@@ -139,3 +139,101 @@ func TestGetMultiItems(t *testing.T) {
 	assert.Equal(t, int64(1), schema.Pager.Page)
 	assert.Equal(t, int64(20), schema.Pager.Count)
 }
+
+func TestGetBalance(t *testing.T) {
+	r, cleaner := pkg.InitTestEnv()
+	defer cleaner()
+	(&ItemController{}).Register(r.Group("/api"))
+
+	w := httptest.NewRecorder()
+
+	u, jwt := pkg.TestCreateUserAndJWT()
+
+	// 创建标签
+	tag, err := database.Q.CreateTag(database.DBCtx, sqlcExec.CreateTagParams{
+		UserID: u.ID,
+		Name:   "test",
+		Sign:   "😄",
+		Kind:   "expenses",
+	})
+	if err != nil {
+		log.Fatal("Create Tag Error: ", err)
+	}
+
+	// 创建第一批
+	for i := 0; i < 10; i++ {
+		tm, _ := pkg.CreatePgTimeTZ(time.Date(2022, 12, 31, 23, 59, 59, 0, time.Local).Format(time.RFC3339))
+		item, err := database.Q.CreateItem(database.DBCtx, sqlcExec.CreateItemParams{
+			UserID:     u.ID,
+			Amount:     2000,
+			Kind:       "expenses",
+			HappenedAt: tm,
+		})
+		if err != nil {
+			log.Fatal("Create Item Error: ", err)
+		}
+		_, err = database.Q.CreateItemTagRelations(database.DBCtx, []sqlcExec.CreateItemTagRelationsParams{
+			{
+				ItemID: item.ID,
+				TagID:  tag.ID,
+			},
+		})
+	}
+	// 创建第二批
+	for i := 0; i < 10; i++ {
+		tm, _ := pkg.CreatePgTimeTZ(time.Date(2023, 01, 01, 12, 00, 00, 0, time.Local).Format(time.RFC3339))
+		item, err := database.Q.CreateItem(database.DBCtx, sqlcExec.CreateItemParams{
+			UserID:     u.ID,
+			Amount:     2000,
+			Kind:       "expenses",
+			HappenedAt: tm,
+		})
+		if err != nil {
+			log.Fatal("Create Item Error: ", err)
+		}
+		_, err = database.Q.CreateItemTagRelations(database.DBCtx, []sqlcExec.CreateItemTagRelationsParams{
+			{
+				ItemID: item.ID,
+				TagID:  tag.ID,
+			},
+		})
+	}
+	// 创建第三批
+	for i := 0; i < 10; i++ {
+		tm, _ := pkg.CreatePgTimeTZ(time.Date(2023, 01, 10, 12, 00, 00, 0, time.Local).Format(time.RFC3339))
+		item, err := database.Q.CreateItem(database.DBCtx, sqlcExec.CreateItemParams{
+			UserID:     u.ID,
+			Amount:     2000,
+			Kind:       "expenses",
+			HappenedAt: tm,
+		})
+		if err != nil {
+			log.Fatal("Create Item Error: ", err)
+		}
+		_, err = database.Q.CreateItemTagRelations(database.DBCtx, []sqlcExec.CreateItemTagRelationsParams{
+			{
+				ItemID: item.ID,
+				TagID:  tag.ID,
+			},
+		})
+	}
+
+	// 发送请求
+	req, _ := http.NewRequest("GET", "/api/v1/items/balance?happened_after=2023-01-01T00:00:00%2B08:00&happened_before=2023-01-02T00:00:00%2B08:00",
+		nil)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+jwt)
+	r.ServeHTTP(w, req)
+
+	// 反序列化返回的消息
+	schema := model.GetBalanceResponseData{}
+	if err = json.Unmarshal(w.Body.Bytes(), &schema); err != nil {
+		t.Error("Unmarshal Response Body Error: ", err)
+	}
+
+	// 校验返回的数据
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, int64(20000), schema.Expenses)
+	assert.Equal(t, int64(0), schema.Income)
+	assert.Equal(t, int64(-20000), schema.Balance)
+}
