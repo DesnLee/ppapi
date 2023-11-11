@@ -181,6 +181,23 @@ func CreateItem(uid pgtype.UUID, b *model.CreateItemRequestBody) (model.CreateIt
 	}, nil
 }
 
+// 生成时间区间
+func generateDateRange(a string, b string) (pgtype.Timestamptz, pgtype.Timestamptz) {
+	if a == "" {
+		// RFC3339 的最小值
+		a = "1970-01-01T00:00:00Z"
+	}
+	after, _ := pkg.CreatePgTimeTZ(a)
+
+	if b == "" {
+		b = time.Now().Local().Format(time.RFC3339)
+	}
+	before, _ := pkg.CreatePgTimeTZ(b)
+
+	return after, before
+}
+
+// 生成查询条件
 func generateQueryItemsCondition(uid pgtype.UUID, b model.GetItemsRequestBody) (sqlcExec.ListItemsByUserIDWithConditionParams, error) {
 	condition := sqlcExec.ListItemsByUserIDWithConditionParams{
 		UserID: uid,
@@ -197,17 +214,8 @@ func generateQueryItemsCondition(uid pgtype.UUID, b model.GetItemsRequestBody) (
 		condition.Limit = int32(b.Size)
 	}
 
-	if b.HappenedBefore == "" {
-		b.HappenedBefore = time.Now().Local().Format(time.RFC3339)
-	}
-	before, _ := pkg.CreatePgTimeTZ(b.HappenedBefore)
+	after, before := generateDateRange(b.HappenedAfter, b.HappenedBefore)
 	condition.HappenedBefore = before
-
-	if b.HappenedAfter == "" {
-		// RFC3339 的最小值
-		b.HappenedAfter = "1970-01-01T00:00:00Z"
-	}
-	after, _ := pkg.CreatePgTimeTZ(b.HappenedAfter)
 	condition.HappenedAfter = after
 
 	return condition, nil
@@ -304,5 +312,35 @@ func GetAndCountItemsByUserID(uid pgtype.UUID, b model.GetItemsRequestBody) (mod
 		PerPage: int64(condition.Limit),
 		Count:   count,
 	}
+	return res, nil
+}
+
+// ValidateGetBalanceRequestBody 验证收支信息请求体
+func ValidateGetBalanceRequestBody(b *model.GetBalanceRequestBody) error {
+	return validateDateRange(b.HappenedAfter, b.HappenedBefore)
+}
+
+// GetBalance 获取收支信息
+func GetBalance(uid pgtype.UUID, b model.GetBalanceRequestBody) (model.GetBalanceResponseData, error) {
+	var res model.GetBalanceResponseData
+	after, before := generateDateRange(b.HappenedAfter, b.HappenedBefore)
+	items, err := database.Q.ListItemsByUserIDWithDateRange(database.DBCtx, sqlcExec.ListItemsByUserIDWithDateRangeParams{
+		UserID:         uid,
+		HappenedAfter:  after,
+		HappenedBefore: before,
+	})
+	if err != nil {
+		fmt.Println("[List Items By UserID With Date Range Failed]: ", err)
+		return res, fmt.Errorf("服务器错误")
+	}
+
+	for _, item := range items {
+		if item.Kind == sqlcExec.KindIncome {
+			res.Income += item.Amount
+		} else if item.Kind == sqlcExec.KindExpenses {
+			res.Expenses += item.Amount
+		}
+	}
+	res.Balance = res.Income - res.Expenses
 	return res, nil
 }

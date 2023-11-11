@@ -31,3 +31,13 @@ type GetItemsResponseData struct {
 	Tags []TagResponse `json:"tags"`
 }
 type GetItemsResponseSuccessBody = ResourcesResponse[GetItemsResponseData]
+
+type GetBalanceRequestBody struct {
+	HappenedBefore string `form:"happened_before" example:"2023-01-01"`
+	HappenedAfter  string `form:"happened_after" example:"2023-01-01"`
+}
+type GetBalanceResponseData struct {
+	Income   int64 `json:"income" example:"100"`
+	Expenses int64 `json:"expenses" example:"100"`
+	Balance  int64 `json:"balance" example:"100"`
+}
