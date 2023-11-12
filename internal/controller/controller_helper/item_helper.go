@@ -306,8 +306,8 @@ func GetAndCountItemsByUserID(uid pgtype.UUID, b model.GetItemsRequestBody) (mod
 				if id == tag.ID {
 					res.Resources[i].Tags = append(res.Resources[i].Tags, model.Tag{
 						ID:   tag.ID,
-						Name: tag.Name,
-						Sign: tag.Sign,
+						Name: *tag.Name,
+						Sign: *tag.Sign,
 					})
 				}
 			}

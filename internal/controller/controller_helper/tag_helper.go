@@ -19,3 +19,13 @@ func ValidateCreateTagRequestBody(b *model.CreateTagRequestBody) error {
 	}
 	return nil
 }
+
+// ValidateUpdateTagRequestBody 验证更新标签请求体
+func ValidateUpdateTagRequestBody(b *model.UpdateTagRequestBody) error {
+	if b.Kind != "" {
+		if err := validateKind(string(b.Kind)); err != nil {
+			return err
+		}
+	}
+	return nil
+}

@@ -58,9 +58,9 @@ func (ctl *TagController) Create(c *gin.Context) {
 
 	r, err := database.Q.CreateTag(database.DBCtx, sqlcExec.CreateTagParams{
 		UserID: userID,
-		Name:   body.Name,
-		Sign:   body.Sign,
-		Kind:   body.Kind,
+		Name:   &body.Name,
+		Sign:   &body.Sign,
+		Kind:   &body.Kind,
 	})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, model.MsgResponse{
@@ -72,9 +72,9 @@ func (ctl *TagController) Create(c *gin.Context) {
 	c.JSON(http.StatusOK, model.CreateTagResponseSuccessBody{Resource: model.Tag{
 		ID:        r.ID,
 		UserID:    r.UserID,
-		Name:      r.Name,
-		Sign:      r.Sign,
-		Kind:      r.Kind,
+		Name:      *r.Name,
+		Sign:      *r.Sign,
+		Kind:      *r.Kind,
 		DeletedAt: r.DeletedAt,
 	}})
 }
@@ -124,9 +124,9 @@ func (ctl *TagController) Read(c *gin.Context) {
 	c.JSON(http.StatusOK, model.GetTagResponseSuccessBody{Resource: model.Tag{
 		ID:        r.ID,
 		UserID:    r.UserID,
-		Name:      r.Name,
-		Sign:      r.Sign,
-		Kind:      r.Kind,
+		Name:      *r.Name,
+		Sign:      *r.Sign,
+		Kind:      *r.Kind,
 		DeletedAt: r.DeletedAt,
 	}})
 }
@@ -162,28 +162,34 @@ func (ctl *TagController) Update(c *gin.Context) {
 		return
 	}
 
-	body := model.CreateTagRequestBody{}
+	body := model.UpdateTagRequestBody{}
 	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, model.MsgResponse{
 			Msg: "参数错误",
 		})
 		return
 	}
-
-	if err := controller_helper.ValidateCreateTagRequestBody(&body); err != nil {
+	if err := controller_helper.ValidateUpdateTagRequestBody(&body); err != nil {
 		c.JSON(http.StatusUnprocessableEntity, model.MsgResponse{
 			Msg: err.Error(),
 		})
 		return
 	}
 
-	r, err := database.Q.UpdateTagByID(database.DBCtx, sqlcExec.UpdateTagByIDParams{
+	queryParams := sqlcExec.UpdateTagByIDParams{
 		UserID: userID,
 		ID:     int64(id),
-		Sign:   body.Sign,
-		Name:   body.Name,
-		Kind:   body.Kind,
-	})
+	}
+	if body.Name != "" {
+		queryParams.Name = &body.Name
+	}
+	if body.Sign != "" {
+		queryParams.Sign = &body.Sign
+	}
+	if body.Kind != "" {
+		queryParams.Kind = &body.Kind
+	}
+	r, err := database.Q.UpdateTagByID(database.DBCtx, queryParams)
 
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
@@ -202,9 +208,9 @@ func (ctl *TagController) Update(c *gin.Context) {
 	c.JSON(http.StatusOK, model.CreateTagResponseSuccessBody{Resource: model.Tag{
 		ID:        r.ID,
 		UserID:    r.UserID,
-		Name:      r.Name,
-		Sign:      r.Sign,
-		Kind:      r.Kind,
+		Name:      *r.Name,
+		Sign:      *r.Sign,
+		Kind:      *r.Kind,
 		DeletedAt: r.DeletedAt,
 	}})
 }

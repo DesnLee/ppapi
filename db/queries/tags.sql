@@ -17,10 +17,10 @@ WHERE id = ANY (sqlc.arg(tag_ids)::BIGINT[])
 
 -- name: UpdateTagByID :one
 UPDATE tags
-SET name = $2,
-    sign = $3,
-    kind = $4
-WHERE id = $1
+SET name = COALESCE($1, name),
+    sign = COALESCE($2, sign),
+    kind = COALESCE($3, kind)
+WHERE id = $4
   AND user_id = $5
 RETURNING *;
 

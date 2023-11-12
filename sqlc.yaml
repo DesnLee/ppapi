@@ -10,3 +10,16 @@ sql :
         package :              "sqlcExec"
         out :                  "db/sqlcExec"
         sql_package :          "pgx/v5"
+        overrides :
+          - column : "tags.name"
+            go_type :
+              type :    "string"
+              pointer : true
+          - column : "tags.sign"
+            go_type :
+              type :    "string"
+              pointer : true
+          - column : "tags.kind"
+            go_type :
+              type :    "Kind"
+              pointer : true

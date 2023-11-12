@@ -26,11 +26,14 @@ func TestCreateItem(t *testing.T) {
 	u, jwt := pkg.TestCreateUserAndJWT()
 
 	// 创建标签
+	name := "test"
+	sign := "😄"
+	kind := sqlcExec.KindExpenses
 	tag, err := database.Q.CreateTag(database.DBCtx, sqlcExec.CreateTagParams{
 		UserID: u.ID,
-		Name:   "test",
-		Sign:   "😄",
-		Kind:   "expenses",
+		Name:   &name,
+		Sign:   &sign,
+		Kind:   &kind,
 	})
 	if err != nil {
 		log.Fatal("Create Tag Error: ", err)
@@ -39,7 +42,7 @@ func TestCreateItem(t *testing.T) {
 	// 发送请求
 	body := model.CreateItemRequestBody{
 		Amount:     1999,
-		Kind:       "expenses",
+		Kind:       sqlcExec.KindExpenses,
 		HappenedAt: time.Now().Local().Format(time.RFC3339),
 		TagIDs:     []int64{tag.ID},
 	}
@@ -72,7 +75,7 @@ func TestCreateItem(t *testing.T) {
 	// 校验返回的数据
 	assert.Equal(t, http.StatusOK, w.Code)
 	assert.Equal(t, int64(1999), item.Amount)
-	assert.Equal(t, "expenses", string(item.Kind))
+	assert.Equal(t, sqlcExec.KindExpenses, string(item.Kind))
 	assert.Equal(t, body.HappenedAt, item.HappenedAt.Time.Format(time.RFC3339))
 	assert.Equal(t, []int64{tag.ID}, tagIDs)
 }
@@ -87,11 +90,14 @@ func TestGetMultiItems(t *testing.T) {
 	u, jwt := pkg.TestCreateUserAndJWT()
 
 	// 创建标签
+	name := "test"
+	sign := "😄"
+	kind := sqlcExec.KindExpenses
 	tag, err := database.Q.CreateTag(database.DBCtx, sqlcExec.CreateTagParams{
 		UserID: u.ID,
-		Name:   "test",
-		Sign:   "😄",
-		Kind:   "expenses",
+		Name:   &name,
+		Sign:   &sign,
+		Kind:   &kind,
 	})
 	if err != nil {
 		log.Fatal("Create Tag Error: ", err)
@@ -106,7 +112,7 @@ func TestGetMultiItems(t *testing.T) {
 		item, err := database.Q.CreateItem(database.DBCtx, sqlcExec.CreateItemParams{
 			UserID:     u.ID,
 			Amount:     1999,
-			Kind:       "expenses",
+			Kind:       sqlcExec.KindExpenses,
 			HappenedAt: tm,
 		})
 		if err != nil {
@@ -150,11 +156,14 @@ func TestGetBalance(t *testing.T) {
 	u, jwt := pkg.TestCreateUserAndJWT()
 
 	// 创建标签
+	name := "test"
+	sign := "😄"
+	kind := sqlcExec.KindExpenses
 	tag, err := database.Q.CreateTag(database.DBCtx, sqlcExec.CreateTagParams{
 		UserID: u.ID,
-		Name:   "test",
-		Sign:   "😄",
-		Kind:   "expenses",
+		Name:   &name,
+		Sign:   &sign,
+		Kind:   &kind,
 	})
 	if err != nil {
 		log.Fatal("Create Tag Error: ", err)
@@ -166,7 +175,7 @@ func TestGetBalance(t *testing.T) {
 		item, err := database.Q.CreateItem(database.DBCtx, sqlcExec.CreateItemParams{
 			UserID:     u.ID,
 			Amount:     2000,
-			Kind:       "expenses",
+			Kind:       sqlcExec.KindExpenses,
 			HappenedAt: tm,
 		})
 		if err != nil {
@@ -185,7 +194,7 @@ func TestGetBalance(t *testing.T) {
 		item, err := database.Q.CreateItem(database.DBCtx, sqlcExec.CreateItemParams{
 			UserID:     u.ID,
 			Amount:     2000,
-			Kind:       "expenses",
+			Kind:       sqlcExec.KindExpenses,
 			HappenedAt: tm,
 		})
 		if err != nil {
@@ -204,7 +213,7 @@ func TestGetBalance(t *testing.T) {
 		item, err := database.Q.CreateItem(database.DBCtx, sqlcExec.CreateItemParams{
 			UserID:     u.ID,
 			Amount:     2000,
-			Kind:       "expenses",
+			Kind:       sqlcExec.KindExpenses,
 			HappenedAt: tm,
 		})
 		if err != nil {
