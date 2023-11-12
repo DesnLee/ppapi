@@ -6,12 +6,15 @@ RETURNING *;
 -- name: FindTagByID :one
 SELECT *
 FROM tags
-WHERE id = $1;
+WHERE id = $1
+  AND user_id = $2;
 
 -- name: FindTagsByIDs :many
 SELECT *
 FROM tags
-WHERE id = ANY($1::BIGINT[]);
+WHERE id = sqlc.arg(tag_ids)::BIGINT[]
+  AND user_id = $1;
 
 -- name: DeleteAllTag :exec
-DELETE FROM tags;
+DELETE
+FROM tags;

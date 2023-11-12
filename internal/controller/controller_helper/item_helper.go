@@ -64,7 +64,10 @@ func validateTagIDs(uid pgtype.UUID, ids []int64) error {
 	}
 
 	// 如果没有找到重复项，则去数据库中查询是否存在这些标签
-	tags, err := database.Q.FindTagsByIDs(database.DBCtx, ids)
+	tags, err := database.Q.FindTagsByIDs(database.DBCtx, sqlcExec.FindTagsByIDsParams{
+		TagIds: ids,
+		UserID: uid,
+	})
 	if err != nil {
 		return fmt.Errorf("服务器错误")
 	}
@@ -288,7 +291,10 @@ func GetAndCountItemsByUserID(uid pgtype.UUID, b model.GetItemsRequestBody) (mod
 		tagIDs = append(tagIDs, tagID)
 	}
 	// 查询标签
-	tags, err := qtx.FindTagsByIDs(database.DBCtx, tagIDs)
+	tags, err := qtx.FindTagsByIDs(database.DBCtx, sqlcExec.FindTagsByIDsParams{
+		TagIds: tagIDs,
+		UserID: uid,
+	})
 	if err != nil {
 		return res, fmt.Errorf("服务器错误")
 	}
