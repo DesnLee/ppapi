@@ -1,12 +1,13 @@
 package model
 
 import (
+	"github.com/jackc/pgx/v5/pgtype"
 	"ppapi.desnlee.com/db/sqlcExec"
 )
 
 type Tag struct {
 	ID     int64         `json:"id" example:"1"`
-	UserID int64         `json:"user_id" example:"1"`
+	UserID pgtype.UUID   `json:"user_id" example:"0d00ec26-5f95-4f13-bdfb-a511f13aa0d2"` // UUIDv4
 	Name   string        `json:"name" example:"餐饮"`
 	Sign   string        `json:"sign" example:"😄"`
 	Kind   sqlcExec.Kind `json:"kind" swaggertype:"string" example:"expenses" enums:"income,expenses"`
