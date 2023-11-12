@@ -20,3 +20,12 @@ type CreateTagRequestBody struct {
 	Kind sqlcExec.Kind `json:"kind" binding:"required" swaggertype:"string" example:"expenses" enums:"income,expenses"`
 }
 type CreateTagResponseSuccessBody = ResourceResponse[Tag]
+
+type GetTagResponseSuccessBody = ResourceResponse[Tag]
+
+type UpdateTagRequestBody struct {
+	Name string        `json:"name" example:"餐饮"`
+	Sign string        `json:"sign" example:"😄"`
+	Kind sqlcExec.Kind `json:"kind" swaggertype:"string" example:"expenses" enums:"income,expenses"`
+}
+type UpdateTagResponseSuccessBody = ResourceResponse[Tag]

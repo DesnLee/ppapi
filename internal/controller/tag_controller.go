@@ -22,6 +22,7 @@ func (ctl *TagController) Register(g *gin.RouterGroup) {
 	v1.Use(middleware.JWTMiddleware())
 	v1.POST("/tags", ctl.Create)
 	v1.GET("/tags/:id", ctl.Read)
+	v1.PATCH("/tags/:id", ctl.Update)
 }
 
 // Create godoc
@@ -120,7 +121,7 @@ func (ctl *TagController) Read(c *gin.Context) {
 		}
 	}
 
-	c.JSON(http.StatusOK, model.CreateTagResponseSuccessBody{Resource: model.Tag{
+	c.JSON(http.StatusOK, model.GetTagResponseSuccessBody{Resource: model.Tag{
 		ID:        r.ID,
 		UserID:    r.UserID,
 		Name:      r.Name,
@@ -135,9 +136,77 @@ func (ctl *TagController) ReadMulti(c *gin.Context) {
 	panic("implement me")
 }
 
+// Update godoc
+//
+//	@Summary		更新标签
+//	@Description	更新标签
+//	@Tags			标签
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id		path		int									true	"标签 ID"
+//	@Param			body	body		model.UpdateTagRequestBody			true	"传入标签信息"
+//	@Success		200		{object}	model.UpdateTagResponseSuccessBody	"成功更新标签"
+//	@Failure		401		{object}	model.MsgResponse					"未授权，token 无效"
+//	@Failure		422		{object}	model.MsgResponse					"参数错误"
+//	@Failure		500		{object}	model.MsgResponse					"服务器错误"
+//	@Router			/api/v1/tags/{id} [patch]
 func (ctl *TagController) Update(c *gin.Context) {
-	// TODO implement me
-	panic("implement me")
+	userID := c.MustGet("userID").(pgtype.UUID)
+
+	id, ok := strconv.Atoi(c.Param("id"))
+	if ok != nil {
+		c.JSON(http.StatusBadRequest, model.MsgResponse{
+			Msg: "id 参数错误",
+		})
+		return
+	}
+
+	body := model.CreateTagRequestBody{}
+	if err := c.ShouldBindJSON(&body); err != nil {
+		c.JSON(http.StatusBadRequest, model.MsgResponse{
+			Msg: "参数错误",
+		})
+		return
+	}
+
+	if err := controller_helper.ValidateCreateTagRequestBody(&body); err != nil {
+		c.JSON(http.StatusUnprocessableEntity, model.MsgResponse{
+			Msg: err.Error(),
+		})
+		return
+	}
+
+	r, err := database.Q.UpdateTagByID(database.DBCtx, sqlcExec.UpdateTagByIDParams{
+		UserID: userID,
+		ID:     int64(id),
+		Sign:   body.Sign,
+		Name:   body.Name,
+		Kind:   body.Kind,
+	})
+
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			c.JSON(http.StatusNotFound, model.MsgResponse{
+				Msg: "标签不存在",
+			})
+			return
+		} else {
+			c.JSON(http.StatusInternalServerError, model.MsgResponse{
+				Msg: "服务器错误",
+			})
+			return
+		}
+	}
+
+	c.JSON(http.StatusOK, model.CreateTagResponseSuccessBody{Resource: model.Tag{
+		ID:        r.ID,
+		UserID:    r.UserID,
+		Name:      r.Name,
+		Sign:      r.Sign,
+		Kind:      r.Kind,
+		DeletedAt: r.DeletedAt,
+	}})
 }
 
 func (ctl *TagController) Destroy(c *gin.Context) {
