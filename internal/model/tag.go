@@ -6,12 +6,12 @@ import (
 )
 
 type Tag struct {
-	ID     int64         `json:"id" example:"1"`
-	UserID pgtype.UUID   `json:"user_id" example:"0d00ec26-5f95-4f13-bdfb-a511f13aa0d2"` // UUIDv4
-	Name   string        `json:"name" example:"餐饮"`
-	Sign   string        `json:"sign" example:"😄"`
-	Kind   sqlcExec.Kind `json:"kind" swaggertype:"string" example:"expenses" enums:"income,expenses"`
-	// DeletedAt string        `json:"deleted_at" example:"2021-01-01T00:00:00+08:00"`
+	ID        int64              `json:"id" example:"1"`
+	UserID    pgtype.UUID        `json:"user_id" swaggertype:"string" example:"0d00ec26-5f95-4f13-bdfb-a511f13aa0d2"` // UUIDv4
+	Name      string             `json:"name" example:"餐饮"`
+	Sign      string             `json:"sign" example:"😄"`
+	Kind      sqlcExec.Kind      `json:"kind" swaggertype:"string" example:"expenses" enums:"income,expenses"`
+	DeletedAt pgtype.Timestamptz `json:"deleted_at" swaggertype:"string" example:"2021-01-01T00:00:00:000+08:00"`
 }
 
 type CreateTagRequestBody struct {

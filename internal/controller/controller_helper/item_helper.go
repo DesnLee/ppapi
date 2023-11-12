@@ -179,7 +179,7 @@ func CreateItem(uid pgtype.UUID, b *model.CreateItemRequestBody) (model.CreateIt
 		ID:         r.ID,
 		Amount:     r.Amount,
 		Kind:       r.Kind,
-		HappenedAt: r.HappenedAt.Time.Format(time.RFC3339),
+		HappenedAt: r.HappenedAt,
 		TagIDs:     b.TagIDs,
 	}, nil
 }
@@ -271,7 +271,7 @@ func GetAndCountItemsByUserID(uid pgtype.UUID, b model.GetItemsRequestBody) (mod
 				ID:         item.ID,
 				Amount:     item.Amount,
 				Kind:       item.Kind,
-				HappenedAt: item.HappenedAt.Time.Local().Format(time.RFC3339),
+				HappenedAt: item.HappenedAt,
 				TagIDs:     item.TagIds,
 			},
 			Tags: []model.Tag{},

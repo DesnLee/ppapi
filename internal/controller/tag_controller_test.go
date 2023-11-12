@@ -47,4 +47,5 @@ func TestCreateTag(t *testing.T) {
 	assert.Equal(t, "😄", schema.Resource.Sign)
 	assert.Equal(t, "expenses", string(schema.Resource.Kind))
 	assert.Equal(t, u.ID, schema.Resource.UserID)
+	assert.Nil(t, schema.Resource.DeletedAt)
 }
