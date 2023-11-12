@@ -1,6 +1,6 @@
 BEGIN;
 
-CREATE TABLE validation_codes
+CREATE TABLE IF NOT EXISTS validation_codes
 (
     id         BIGSERIAL PRIMARY KEY,
     code       VARCHAR(20)  NOT NULL,
