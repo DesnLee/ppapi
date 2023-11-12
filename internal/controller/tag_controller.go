@@ -1,10 +1,12 @@
 package controller
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 	"ppapi.desnlee.com/db/sqlcExec"
 	"ppapi.desnlee.com/internal/controller/controller_helper"
@@ -105,10 +107,17 @@ func (ctl *TagController) Read(c *gin.Context) {
 		ID:     int64(id),
 	})
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, model.MsgResponse{
-			Msg: "服务器错误",
-		})
-		return
+		if errors.Is(err, pgx.ErrNoRows) {
+			c.JSON(http.StatusNotFound, model.MsgResponse{
+				Msg: "标签不存在",
+			})
+			return
+		} else {
+			c.JSON(http.StatusInternalServerError, model.MsgResponse{
+				Msg: "服务器错误",
+			})
+			return
+		}
 	}
 
 	c.JSON(http.StatusOK, model.CreateTagResponseSuccessBody{Resource: model.Tag{

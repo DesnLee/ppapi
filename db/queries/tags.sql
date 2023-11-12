@@ -12,7 +12,7 @@ WHERE id = $1
 -- name: FindTagsByIDs :many
 SELECT *
 FROM tags
-WHERE id = sqlc.arg(tag_ids)::BIGINT[]
+WHERE id = ANY(sqlc.arg(tag_ids)::BIGINT[])
   AND user_id = $1;
 
 -- name: DeleteAllTag :exec
