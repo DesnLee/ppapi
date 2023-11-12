@@ -183,15 +183,6 @@ func (ctl *TagController) Update(c *gin.Context) {
 		Sign:   body.Sign,
 		Kind:   body.Kind,
 	}
-	// if body.Name.Valid {
-	//     queryParams.Name = body.Name.String
-	// }
-	// if body.Sign.Valid {
-	//     queryParams.Sign = body.Sign.String
-	// }
-	// if body.Kind.Valid {
-	//     queryParams.Kind = body.Kind.String
-	// }
 	r, err := database.Q.UpdateTagByID(database.DBCtx, queryParams)
 
 	if err != nil {
