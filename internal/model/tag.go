@@ -15,8 +15,8 @@ type Tag struct {
 }
 
 type CreateTagRequestBody struct {
-	Name string        `json:"name" example:"餐饮"`
-	Sign string        `json:"sign" example:"😄"`
-	Kind sqlcExec.Kind `json:"kind" swaggertype:"string" example:"expenses" enums:"income,expenses"`
+	Name string        `json:"name" binding:"required" example:"餐饮"`
+	Sign string        `json:"sign" binding:"required" example:"😄"`
+	Kind sqlcExec.Kind `json:"kind" binding:"required" swaggertype:"string" example:"expenses" enums:"income,expenses"`
 }
 type CreateTagResponseSuccessBody = ResourceResponse[Tag]
