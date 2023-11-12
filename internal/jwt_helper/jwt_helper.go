@@ -45,6 +45,10 @@ func ParseJWT(tk string) (*JWTClaims, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &JWTClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return getHMACSecret()
 	})
+	if err != nil {
+		log.Println("ERR: [Parse JWT Failed]: ", err)
+		return &JWTClaims{}, err
+	}
 
 	if claims, ok := token.Claims.(*JWTClaims); ok && token.Valid {
 		return claims, nil
