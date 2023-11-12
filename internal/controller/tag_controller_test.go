@@ -9,6 +9,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/guregu/null.v4"
@@ -142,4 +143,37 @@ func TestUpdateTag(t *testing.T) {
 	assert.Equal(t, body.Sign.String, schema.Resource.Sign)
 	assert.Equal(t, tag.UserID, schema.Resource.UserID)
 	assert.Equal(t, tag.DeletedAt, schema.Resource.DeletedAt)
+}
+
+func TestDeleteTag(t *testing.T) {
+	r, cleaner := pkg.InitTestEnv()
+	defer cleaner()
+	(&TagController{}).Register(r.Group("/api"))
+
+	w := httptest.NewRecorder()
+
+	u, jwt := pkg.TestCreateUserAndJWT()
+
+	// 创建标签
+	tag, _ := database.Q.CreateTag(database.DBCtx, sqlcExec.CreateTagParams{
+		UserID: u.ID,
+		Name:   "test",
+		Sign:   "😄",
+		Kind:   constants.KindExpenses,
+	})
+
+	// 发送请求
+	url := fmt.Sprintf("/api/v1/tags/%d", tag.ID)
+	req, _ := http.NewRequest("DELETE", url, nil)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+jwt)
+	r.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusNoContent, w.Code)
+
+	_, err := database.Q.FindTagByID(database.DBCtx, sqlcExec.FindTagByIDParams{
+		ID:     tag.ID,
+		UserID: u.ID,
+	})
+	assert.Equal(t, pgx.ErrNoRows, err)
 }

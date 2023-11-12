@@ -23,6 +23,7 @@ func (ctl *TagController) Register(g *gin.RouterGroup) {
 	v1.POST("/tags", ctl.Create)
 	v1.GET("/tags/:id", ctl.Read)
 	v1.PATCH("/tags/:id", ctl.Update)
+	v1.DELETE("/tags/:id", ctl.Destroy)
 }
 
 // Create godoc
@@ -209,7 +210,48 @@ func (ctl *TagController) Update(c *gin.Context) {
 	}})
 }
 
+// Destroy godoc
+//
+//	@Summary		删除标签
+//	@Description	删除标签
+//	@Tags			标签
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id		path		int									true	"标签 ID"
+//	@Success		204		"成功删除标签"
+//	@Failure		400		{object}	model.MsgResponse					"参数错误"
+//	@Failure		401		{object}	model.MsgResponse					"未授权，token 无效"
+//	@Failure		500		{object}	model.MsgResponse					"服务器错误"
+//	@Router			/api/v1/tags/{id} [delete]
 func (ctl *TagController) Destroy(c *gin.Context) {
-	// TODO implement me
-	panic("implement me")
+	userID := c.MustGet("userID").(pgtype.UUID)
+
+	id, ok := strconv.Atoi(c.Param("id"))
+	if ok != nil {
+		c.JSON(http.StatusBadRequest, model.MsgResponse{
+			Msg: "id 参数错误",
+		})
+		return
+	}
+
+	err := database.Q.DeleteTagByID(database.DBCtx, sqlcExec.DeleteTagByIDParams{
+		UserID: userID,
+		ID:     int64(id),
+	})
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			c.JSON(http.StatusNotFound, model.MsgResponse{
+				Msg: "标签不存在",
+			})
+			return
+		} else {
+			c.JSON(http.StatusInternalServerError, model.MsgResponse{
+				Msg: "服务器错误",
+			})
+			return
+		}
+	}
+
+	c.JSON(http.StatusNoContent, nil)
 }
