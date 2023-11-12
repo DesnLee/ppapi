@@ -11,6 +11,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"ppapi.desnlee.com/db/sqlcExec"
+	"ppapi.desnlee.com/internal/constants"
 	"ppapi.desnlee.com/internal/database"
 	"ppapi.desnlee.com/internal/model"
 	"ppapi.desnlee.com/pkg"
@@ -28,7 +29,7 @@ func TestCreateItem(t *testing.T) {
 	// 创建标签
 	name := "test"
 	sign := "😄"
-	kind := sqlcExec.KindExpenses
+	kind := constants.KindExpenses
 	tag, err := database.Q.CreateTag(database.DBCtx, sqlcExec.CreateTagParams{
 		UserID: u.ID,
 		Name:   &name,
@@ -42,7 +43,7 @@ func TestCreateItem(t *testing.T) {
 	// 发送请求
 	body := model.CreateItemRequestBody{
 		Amount:     1999,
-		Kind:       sqlcExec.KindExpenses,
+		Kind:       constants.KindExpenses,
 		HappenedAt: time.Now().Local().Format(time.RFC3339),
 		TagIDs:     []int64{tag.ID},
 	}
@@ -75,7 +76,7 @@ func TestCreateItem(t *testing.T) {
 	// 校验返回的数据
 	assert.Equal(t, http.StatusOK, w.Code)
 	assert.Equal(t, int64(1999), item.Amount)
-	assert.Equal(t, sqlcExec.KindExpenses, string(item.Kind))
+	assert.Equal(t, constants.KindExpenses, item.Kind)
 	assert.Equal(t, body.HappenedAt, item.HappenedAt.Time.Format(time.RFC3339))
 	assert.Equal(t, []int64{tag.ID}, tagIDs)
 }
@@ -92,7 +93,7 @@ func TestGetMultiItems(t *testing.T) {
 	// 创建标签
 	name := "test"
 	sign := "😄"
-	kind := sqlcExec.KindExpenses
+	kind := constants.KindExpenses
 	tag, err := database.Q.CreateTag(database.DBCtx, sqlcExec.CreateTagParams{
 		UserID: u.ID,
 		Name:   &name,
@@ -112,7 +113,7 @@ func TestGetMultiItems(t *testing.T) {
 		item, err := database.Q.CreateItem(database.DBCtx, sqlcExec.CreateItemParams{
 			UserID:     u.ID,
 			Amount:     1999,
-			Kind:       sqlcExec.KindExpenses,
+			Kind:       constants.KindExpenses,
 			HappenedAt: tm,
 		})
 		if err != nil {
@@ -158,7 +159,7 @@ func TestGetBalance(t *testing.T) {
 	// 创建标签
 	name := "test"
 	sign := "😄"
-	kind := sqlcExec.KindExpenses
+	kind := constants.KindExpenses
 	tag, err := database.Q.CreateTag(database.DBCtx, sqlcExec.CreateTagParams{
 		UserID: u.ID,
 		Name:   &name,
@@ -175,7 +176,7 @@ func TestGetBalance(t *testing.T) {
 		item, err := database.Q.CreateItem(database.DBCtx, sqlcExec.CreateItemParams{
 			UserID:     u.ID,
 			Amount:     2000,
-			Kind:       sqlcExec.KindExpenses,
+			Kind:       constants.KindExpenses,
 			HappenedAt: tm,
 		})
 		if err != nil {
@@ -194,7 +195,7 @@ func TestGetBalance(t *testing.T) {
 		item, err := database.Q.CreateItem(database.DBCtx, sqlcExec.CreateItemParams{
 			UserID:     u.ID,
 			Amount:     2000,
-			Kind:       sqlcExec.KindExpenses,
+			Kind:       constants.KindExpenses,
 			HappenedAt: tm,
 		})
 		if err != nil {
@@ -213,7 +214,7 @@ func TestGetBalance(t *testing.T) {
 		item, err := database.Q.CreateItem(database.DBCtx, sqlcExec.CreateItemParams{
 			UserID:     u.ID,
 			Amount:     2000,
-			Kind:       sqlcExec.KindExpenses,
+			Kind:       constants.KindExpenses,
 			HappenedAt: tm,
 		})
 		if err != nil {

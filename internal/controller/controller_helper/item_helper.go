@@ -8,6 +8,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 	"ppapi.desnlee.com/db/sqlcExec"
+	"ppapi.desnlee.com/internal/constants"
 	"ppapi.desnlee.com/internal/database"
 	"ppapi.desnlee.com/internal/model"
 	"ppapi.desnlee.com/pkg"
@@ -23,7 +24,7 @@ func validateAmount(amount int64) error {
 
 // 验证账单类型
 func validateKind(kind string) error {
-	if kind != "income" && kind != "expenses" {
+	if kind != constants.KindIncome && kind != constants.KindExpenses {
 		return fmt.Errorf("kind 必须为 income 或 expenses")
 	}
 	return nil
@@ -114,7 +115,7 @@ func ValidateCreateItemRequestBody(uid pgtype.UUID, b *model.CreateItemRequestBo
 	if err := validateAmount(b.Amount); err != nil {
 		return err
 	}
-	if err := validateKind(string(b.Kind)); err != nil {
+	if err := validateKind(b.Kind); err != nil {
 		return err
 	}
 	if err := validateHappenedAt(b.HappenedAt); err != nil {
@@ -342,9 +343,9 @@ func GetBalance(uid pgtype.UUID, b model.GetBalanceRequestBody) (model.GetBalanc
 	}
 
 	for _, item := range items {
-		if item.Kind == sqlcExec.KindIncome {
+		if item.Kind == constants.KindIncome {
 			res.Income += item.Amount
-		} else if item.Kind == sqlcExec.KindExpenses {
+		} else if item.Kind == constants.KindExpenses {
 			res.Expenses += item.Amount
 		}
 	}

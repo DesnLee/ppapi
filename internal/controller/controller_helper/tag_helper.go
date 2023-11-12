@@ -8,7 +8,7 @@ import (
 
 // ValidateCreateTagRequestBody 验证创建标签请求体
 func ValidateCreateTagRequestBody(b *model.CreateTagRequestBody) error {
-	if err := validateKind(string(b.Kind)); err != nil {
+	if err := validateKind(b.Kind); err != nil {
 		return err
 	}
 	if b.Name == "" {
@@ -23,7 +23,7 @@ func ValidateCreateTagRequestBody(b *model.CreateTagRequestBody) error {
 // ValidateUpdateTagRequestBody 验证更新标签请求体
 func ValidateUpdateTagRequestBody(b *model.UpdateTagRequestBody) error {
 	if b.Kind != "" {
-		if err := validateKind(string(b.Kind)); err != nil {
+		if err := validateKind(b.Kind); err != nil {
 			return err
 		}
 	}

@@ -11,6 +11,7 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/stretchr/testify/assert"
 	"ppapi.desnlee.com/db/sqlcExec"
+	"ppapi.desnlee.com/internal/constants"
 	"ppapi.desnlee.com/internal/database"
 	"ppapi.desnlee.com/internal/model"
 	"ppapi.desnlee.com/pkg"
@@ -29,7 +30,7 @@ func TestCreateTag(t *testing.T) {
 	body := model.CreateTagRequestBody{
 		Name: "test",
 		Sign: "😄",
-		Kind: sqlcExec.KindExpenses,
+		Kind: constants.KindExpenses,
 	}
 	bodyStr, _ := json.Marshal(body)
 	req, _ := http.NewRequest("POST", "/api/v1/tags", strings.NewReader(string(bodyStr)))
@@ -47,7 +48,7 @@ func TestCreateTag(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 	assert.Equal(t, "test", schema.Resource.Name)
 	assert.Equal(t, "😄", schema.Resource.Sign)
-	assert.Equal(t, sqlcExec.KindExpenses, schema.Resource.Kind)
+	assert.Equal(t, constants.KindExpenses, schema.Resource.Kind)
 	assert.Equal(t, u.ID, schema.Resource.UserID)
 	assert.Equal(t, pgtype.Timestamptz{}, schema.Resource.DeletedAt)
 }
@@ -64,7 +65,7 @@ func TestGetTag(t *testing.T) {
 	// 创建标签
 	name := "test"
 	sign := "😄"
-	kind := sqlcExec.KindExpenses
+	kind := constants.KindExpenses
 	tag, _ := database.Q.CreateTag(database.DBCtx, sqlcExec.CreateTagParams{
 		UserID: u.ID,
 		Name:   &name,
@@ -106,7 +107,7 @@ func TestUpdateTag(t *testing.T) {
 	// 创建标签
 	name := "test"
 	sign := "😄"
-	kind := sqlcExec.KindExpenses
+	kind := constants.KindExpenses
 	tag, _ := database.Q.CreateTag(database.DBCtx, sqlcExec.CreateTagParams{
 		UserID: u.ID,
 		Name:   &name,

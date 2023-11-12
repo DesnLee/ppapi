@@ -1,13 +1,11 @@
 package router
 
 import (
-	"fmt"
 	"io"
 	"log"
 	"os"
 	"path"
 	"runtime"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -32,23 +30,25 @@ func New() *gin.Engine {
 	// 如果需要同时将日志写入文件和控制台，请使用以下代码。
 	gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
 
+	gin.SetMode(gin.ReleaseMode)
 	r := gin.New()
 	_ = r.SetTrustedProxies(nil)
 
 	// 全局使用日志中间件
-	r.Use(gin.LoggerWithFormatter(func(param gin.LogFormatterParams) string {
-		return fmt.Sprintf("%s [%s] %s｜%d[%s] \"%s\" <%s %s> %s\n",
-			param.TimeStamp.Format(time.DateTime),
-			param.ClientIP,
-			param.Latency,
-			param.StatusCode,
-			param.Method,
-			param.Path,
-			param.Request.Proto,
-			param.Request.UserAgent(),
-			param.ErrorMessage,
-		)
-	}))
+	// r.Use(gin.LoggerWithFormatter(func(param gin.LogFormatterParams) string {
+	// 	return fmt.Sprintf("%s [%s] %s｜%d[%s] \"%s\" <%s %s> %s\n",
+	// 		param.TimeStamp.Format(time.DateTime),
+	// 		param.ClientIP,
+	// 		param.Latency,
+	// 		param.StatusCode,
+	// 		param.Method,
+	// 		param.Path,
+	// 		param.Request.Proto,
+	// 		param.Request.UserAgent(),
+	// 		param.ErrorMessage,
+	// 	)
+	// }))
+
 	// 全局使用恢复中间件
 	r.Use(gin.Recovery())
 	// 全局使用跨域中间件
