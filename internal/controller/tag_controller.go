@@ -58,9 +58,9 @@ func (ctl *TagController) Create(c *gin.Context) {
 
 	r, err := database.Q.CreateTag(database.DBCtx, sqlcExec.CreateTagParams{
 		UserID: userID,
-		Name:   &body.Name,
-		Sign:   &body.Sign,
-		Kind:   &body.Kind,
+		Name:   body.Name,
+		Sign:   body.Sign,
+		Kind:   body.Kind,
 	})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, model.MsgResponse{
@@ -72,9 +72,9 @@ func (ctl *TagController) Create(c *gin.Context) {
 	c.JSON(http.StatusOK, model.CreateTagResponseSuccessBody{Resource: model.Tag{
 		ID:        r.ID,
 		UserID:    r.UserID,
-		Name:      *r.Name,
-		Sign:      *r.Sign,
-		Kind:      *r.Kind,
+		Name:      r.Name,
+		Sign:      r.Sign,
+		Kind:      r.Kind,
 		DeletedAt: r.DeletedAt,
 	}})
 }
@@ -124,9 +124,9 @@ func (ctl *TagController) Read(c *gin.Context) {
 	c.JSON(http.StatusOK, model.GetTagResponseSuccessBody{Resource: model.Tag{
 		ID:        r.ID,
 		UserID:    r.UserID,
-		Name:      *r.Name,
-		Sign:      *r.Sign,
-		Kind:      *r.Kind,
+		Name:      r.Name,
+		Sign:      r.Sign,
+		Kind:      r.Kind,
 		DeletedAt: r.DeletedAt,
 	}})
 }
@@ -179,16 +179,19 @@ func (ctl *TagController) Update(c *gin.Context) {
 	queryParams := sqlcExec.UpdateTagByIDParams{
 		UserID: userID,
 		ID:     int64(id),
+		Name:   body.Name,
+		Sign:   body.Sign,
+		Kind:   body.Kind,
 	}
-	if body.Name != "" {
-		queryParams.Name = &body.Name
-	}
-	if body.Sign != "" {
-		queryParams.Sign = &body.Sign
-	}
-	if body.Kind != "" {
-		queryParams.Kind = &body.Kind
-	}
+	// if body.Name.Valid {
+	//     queryParams.Name = body.Name.String
+	// }
+	// if body.Sign.Valid {
+	//     queryParams.Sign = body.Sign.String
+	// }
+	// if body.Kind.Valid {
+	//     queryParams.Kind = body.Kind.String
+	// }
 	r, err := database.Q.UpdateTagByID(database.DBCtx, queryParams)
 
 	if err != nil {
@@ -208,9 +211,9 @@ func (ctl *TagController) Update(c *gin.Context) {
 	c.JSON(http.StatusOK, model.CreateTagResponseSuccessBody{Resource: model.Tag{
 		ID:        r.ID,
 		UserID:    r.UserID,
-		Name:      *r.Name,
-		Sign:      *r.Sign,
-		Kind:      *r.Kind,
+		Name:      r.Name,
+		Sign:      r.Sign,
+		Kind:      r.Kind,
 		DeletedAt: r.DeletedAt,
 	}})
 }

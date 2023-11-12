@@ -22,8 +22,8 @@ func ValidateCreateTagRequestBody(b *model.CreateTagRequestBody) error {
 
 // ValidateUpdateTagRequestBody 验证更新标签请求体
 func ValidateUpdateTagRequestBody(b *model.UpdateTagRequestBody) error {
-	if b.Kind != "" {
-		if err := validateKind(b.Kind); err != nil {
+	if b.Kind.Valid && b.Kind.String != "" {
+		if err := validateKind(b.Kind.String); err != nil {
 			return err
 		}
 	}

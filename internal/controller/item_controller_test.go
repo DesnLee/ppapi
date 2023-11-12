@@ -27,14 +27,11 @@ func TestCreateItem(t *testing.T) {
 	u, jwt := pkg.TestCreateUserAndJWT()
 
 	// 创建标签
-	name := "test"
-	sign := "😄"
-	kind := constants.KindExpenses
 	tag, err := database.Q.CreateTag(database.DBCtx, sqlcExec.CreateTagParams{
 		UserID: u.ID,
-		Name:   &name,
-		Sign:   &sign,
-		Kind:   &kind,
+		Name:   "test",
+		Sign:   "😄",
+		Kind:   constants.KindExpenses,
 	})
 	if err != nil {
 		log.Fatal("Create Tag Error: ", err)
@@ -91,14 +88,11 @@ func TestGetMultiItems(t *testing.T) {
 	u, jwt := pkg.TestCreateUserAndJWT()
 
 	// 创建标签
-	name := "test"
-	sign := "😄"
-	kind := constants.KindExpenses
 	tag, err := database.Q.CreateTag(database.DBCtx, sqlcExec.CreateTagParams{
 		UserID: u.ID,
-		Name:   &name,
-		Sign:   &sign,
-		Kind:   &kind,
+		Name:   "test",
+		Sign:   "😄",
+		Kind:   constants.KindExpenses,
 	})
 	if err != nil {
 		log.Fatal("Create Tag Error: ", err)
@@ -157,14 +151,11 @@ func TestGetBalance(t *testing.T) {
 	u, jwt := pkg.TestCreateUserAndJWT()
 
 	// 创建标签
-	name := "test"
-	sign := "😄"
-	kind := constants.KindExpenses
 	tag, err := database.Q.CreateTag(database.DBCtx, sqlcExec.CreateTagParams{
 		UserID: u.ID,
-		Name:   &name,
-		Sign:   &sign,
-		Kind:   &kind,
+		Name:   "test",
+		Sign:   "😄",
+		Kind:   constants.KindExpenses,
 	})
 	if err != nil {
 		log.Fatal("Create Tag Error: ", err)

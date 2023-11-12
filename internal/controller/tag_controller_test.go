@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -10,6 +11,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/stretchr/testify/assert"
+	"gopkg.in/guregu/null.v4"
 	"ppapi.desnlee.com/db/sqlcExec"
 	"ppapi.desnlee.com/internal/constants"
 	"ppapi.desnlee.com/internal/database"
@@ -63,14 +65,11 @@ func TestGetTag(t *testing.T) {
 	u, jwt := pkg.TestCreateUserAndJWT()
 
 	// 创建标签
-	name := "test"
-	sign := "😄"
-	kind := constants.KindExpenses
 	tag, _ := database.Q.CreateTag(database.DBCtx, sqlcExec.CreateTagParams{
 		UserID: u.ID,
-		Name:   &name,
-		Sign:   &sign,
-		Kind:   &kind,
+		Name:   "test",
+		Sign:   "😄",
+		Kind:   constants.KindExpenses,
 	})
 
 	// 发送请求
@@ -88,9 +87,9 @@ func TestGetTag(t *testing.T) {
 
 	// 校验返回的数据
 	assert.Equal(t, http.StatusOK, w.Code)
-	assert.Equal(t, *tag.Kind, schema.Resource.Kind)
-	assert.Equal(t, *tag.Name, schema.Resource.Name)
-	assert.Equal(t, *tag.Sign, schema.Resource.Sign)
+	assert.Equal(t, tag.Kind, schema.Resource.Kind)
+	assert.Equal(t, tag.Name, schema.Resource.Name)
+	assert.Equal(t, tag.Sign, schema.Resource.Sign)
 	assert.Equal(t, tag.UserID, schema.Resource.UserID)
 	assert.Equal(t, tag.DeletedAt, schema.Resource.DeletedAt)
 }
@@ -105,20 +104,23 @@ func TestUpdateTag(t *testing.T) {
 	u, jwt := pkg.TestCreateUserAndJWT()
 
 	// 创建标签
-	name := "test"
-	sign := "😄"
-	kind := constants.KindExpenses
 	tag, _ := database.Q.CreateTag(database.DBCtx, sqlcExec.CreateTagParams{
 		UserID: u.ID,
-		Name:   &name,
-		Sign:   &sign,
-		Kind:   &kind,
+		Name:   "test",
+		Sign:   "😄",
+		Kind:   constants.KindExpenses,
 	})
 
 	// 发送请求
 	body := model.UpdateTagRequestBody{
-		Name: "test 2",
-		Sign: "🚗",
+		Name: null.String{NullString: sql.NullString{
+			String: "test 333",
+			Valid:  true,
+		}},
+		Sign: null.String{NullString: sql.NullString{
+			String: "🚗",
+			Valid:  true,
+		}},
 	}
 	bodyStr, _ := json.Marshal(body)
 	url := fmt.Sprintf("/api/v1/tags/%d", tag.ID)
@@ -135,9 +137,9 @@ func TestUpdateTag(t *testing.T) {
 
 	// 校验返回的数据
 	assert.Equal(t, http.StatusOK, w.Code)
-	assert.Equal(t, *tag.Kind, schema.Resource.Kind)
-	assert.Equal(t, body.Name, schema.Resource.Name)
-	assert.Equal(t, body.Sign, schema.Resource.Sign)
+	assert.Equal(t, tag.Kind, schema.Resource.Kind)
+	assert.Equal(t, body.Name.String, schema.Resource.Name)
+	assert.Equal(t, body.Sign.String, schema.Resource.Sign)
 	assert.Equal(t, tag.UserID, schema.Resource.UserID)
 	assert.Equal(t, tag.DeletedAt, schema.Resource.DeletedAt)
 }
