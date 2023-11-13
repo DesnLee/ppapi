@@ -177,3 +177,45 @@ func TestDeleteTag(t *testing.T) {
 	})
 	assert.Equal(t, pgx.ErrNoRows, err)
 }
+
+func TestGetMultiTags(t *testing.T) {
+	r, cleaner := pkg.InitTestEnv()
+	defer cleaner()
+	(&TagController{}).Register(r.Group("/api"))
+
+	w := httptest.NewRecorder()
+
+	u, jwt := pkg.TestCreateUserAndJWT()
+
+	// 创建标签
+	for i := 0; i < 20; i++ {
+		_, err := database.Q.CreateTag(database.DBCtx, sqlcExec.CreateTagParams{
+			UserID: u.ID,
+			Name:   fmt.Sprintf("test %d", i),
+			Sign:   "😄",
+			Kind:   constants.KindExpenses,
+		})
+		if err != nil {
+			t.Error("Create Tag Error: ", err)
+		}
+	}
+
+	// 发送请求
+	req, _ := http.NewRequest("GET", "/api/v1/tags", nil)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+jwt)
+	r.ServeHTTP(w, req)
+
+	// 反序列化返回的消息
+	schema := model.GetTagsResponseSuccessBody{}
+	if err := json.Unmarshal(w.Body.Bytes(), &schema); err != nil {
+		t.Error("Unmarshal Response Body Error: ", err)
+	}
+
+	// 校验返回的数据
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, 10, len(schema.Resources))
+	assert.Equal(t, "test 19", schema.Resources[0].Name)
+	assert.Equal(t, int64(1), schema.Pager.Page)
+	assert.Equal(t, int64(20), schema.Pager.Count)
+}
