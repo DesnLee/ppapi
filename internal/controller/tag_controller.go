@@ -24,6 +24,7 @@ func (ctl *TagController) Register(g *gin.RouterGroup) {
 	v1.GET("/tags/:id", ctl.Read)
 	v1.PATCH("/tags/:id", ctl.Update)
 	v1.DELETE("/tags/:id", ctl.Destroy)
+	v1.GET("/tags", ctl.ReadMulti)
 }
 
 // Create godoc
@@ -132,9 +133,38 @@ func (ctl *TagController) Read(c *gin.Context) {
 	}})
 }
 
+// ReadMulti godoc
+//
+//	@Summary		查询标签分页数据
+//	@Description	查询多条标签数据
+//	@Tags			标签
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			query	query		model.GetTagsRequestBody			true	"传入查询条件"
+//	@Success		200		{object}	model.GetTagsResponseSuccessBody	"成功查询标签数据"
+//	@Failure		401		{object}	model.MsgResponse					"未授权，token 无效"
+//	@Failure		422		{object}	model.MsgResponse					"参数错误"
+//	@Failure		500		{object}	model.MsgResponse					"服务器错误"
+//	@Router			/api/v1/tags [get]
 func (ctl *TagController) ReadMulti(c *gin.Context) {
-	// TODO implement me
-	panic("implement me")
+	userID := c.MustGet("userID").(pgtype.UUID)
+	query := model.GetTagsRequestBody{}
+	if err := c.ShouldBindQuery(&query); err != nil {
+		c.JSON(http.StatusBadRequest, model.MsgResponse{
+			Msg: "参数错误",
+		})
+		return
+	}
+
+	res, err := controller_helper.GetAndCountTagsByUserID(userID, query)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, model.MsgResponse{
+			Msg: err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, res)
 }
 
 // Update godoc

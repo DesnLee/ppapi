@@ -29,3 +29,10 @@ type UpdateTagRequestBody struct {
 	Kind null.String `json:"kind" example:"expenses"`
 }
 type UpdateTagResponseSuccessBody = ResourceResponse[Tag]
+
+type GetTagsRequestBody struct {
+	Kind string `form:"kind" example:"expenses"`
+	Page int64  `form:"page" example:"1"`
+	Size int64  `form:"size" example:"10"`
+}
+type GetTagsResponseSuccessBody = ResourcesResponse[Tag]

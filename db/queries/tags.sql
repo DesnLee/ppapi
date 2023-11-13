@@ -34,6 +34,22 @@ WHERE id = $1
   AND user_id = $2
   AND deleted_at IS NULL;
 
+-- name: ListTagsByUserIDWithCondition :many
+SELECT *
+FROM tags
+WHERE user_id = $1
+  AND kind = $2
+  AND deleted_at IS NULL
+ORDER BY created_at DESC
+OFFSET $3 LIMIT $4;
+
+-- name: CountTagsByUserIDWithCondition :one
+SELECT COUNT(*)
+FROM tags
+WHERE user_id = $1
+  AND kind = $2
+  AND deleted_at IS NULL;
+
 -- name: DeleteAllTag :exec
 DELETE
 FROM tags;
