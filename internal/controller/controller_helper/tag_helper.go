@@ -47,13 +47,13 @@ func generateQueryTagsCondition(uid pgtype.UUID, b model.GetTagsRequestBody) (sq
 		condition.Limit = 10
 		b.Size = 10
 	} else {
-		condition.Limit = int32(b.Size)
+		condition.Limit = b.Size
 	}
 	if b.Page == 0 {
 		condition.Offset = 0
 		b.Page = 1
 	} else {
-		condition.Offset = int32((b.Page - 1) * b.Size)
+		condition.Offset = (b.Page - 1) * b.Size
 	}
 
 	return condition, nil

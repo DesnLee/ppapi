@@ -2,7 +2,6 @@ package model
 
 import (
 	"github.com/jackc/pgx/v5/pgtype"
-	"gopkg.in/guregu/null.v4"
 )
 
 type Tag struct {
@@ -24,9 +23,9 @@ type CreateTagResponseSuccessBody = ResourceResponse[Tag]
 type GetTagResponseSuccessBody = ResourceResponse[Tag]
 
 type UpdateTagRequestBody struct {
-	Name null.String `json:"name" example:"餐饮"`
-	Sign null.String `json:"sign" example:"😄"`
-	Kind null.String `json:"kind" example:"expenses"`
+	Name pgtype.Text `json:"name" example:"餐饮"`
+	Sign pgtype.Text `json:"sign" example:"😄"`
+	Kind pgtype.Text `json:"kind" example:"expenses"`
 }
 type UpdateTagResponseSuccessBody = ResourceResponse[Tag]
 

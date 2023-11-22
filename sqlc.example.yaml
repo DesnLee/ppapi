@@ -3,6 +3,8 @@ sql :
   - engine :  "postgresql"
     queries : "db/queries"
     schema :  "db/schemas"
+    database :
+      uri : "postgres://${DB_USER}:${DB_PWD}@${DB_HOST}:${DB_PORT/${DB_NAME}?sslmode=disable"
     gen :
       go :
         emit_json_tags :       true

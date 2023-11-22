@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -12,7 +11,6 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/stretchr/testify/assert"
-	"gopkg.in/guregu/null.v4"
 	"ppapi.desnlee.com/db/sqlcExec"
 	"ppapi.desnlee.com/internal/constants"
 	"ppapi.desnlee.com/internal/database"
@@ -114,14 +112,8 @@ func TestUpdateTag(t *testing.T) {
 
 	// 发送请求
 	body := model.UpdateTagRequestBody{
-		Name: null.String{NullString: sql.NullString{
-			String: "test 333",
-			Valid:  true,
-		}},
-		Sign: null.String{NullString: sql.NullString{
-			String: "🚗",
-			Valid:  true,
-		}},
+		Name: pgtype.Text{String: "test 333", Valid: true},
+		Sign: pgtype.Text{String: "🚗", Valid: true},
 	}
 	bodyStr, _ := json.Marshal(body)
 	url := fmt.Sprintf("/api/v1/tags/%d", tag.ID)
